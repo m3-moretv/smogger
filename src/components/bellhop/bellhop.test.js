@@ -7,7 +7,7 @@ jest.mock('fs');
 const mockedSpec = fs.readFileSync('src/components/specLoader/__mocks__/petstore.yaml').toString();
 
 test('Download by HTTPS', () => {
-  const link = 'http://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore.yaml';
+  const link = 'https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore.yaml';
   return expect(bellhop(link)).resolves.toEqual(mockedSpec);
 });
 
