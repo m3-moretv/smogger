@@ -14,7 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^2.19.0",
-    "node-fetch": "^2.2.1"
+    "node-fetch": "^2.2.1",
+    "swagger-parser": "^6.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
