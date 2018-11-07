@@ -7,19 +7,20 @@
     "build": "babel src/ -d lib/",
     "build:dev": "babel src/ -d lib/ --watch --source-maps inline",
     "test": "jest",
-    "flow:deps": "flow-types install"
+    "flow:deps": "flow-typed install"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-
+    "node-fetch": "^2.2.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
     "@babel/core": "^7.1.5",
     "@babel/preset-env": "^7.1.5",
     "@babel/preset-flow": "^7.0.0",
-    "babel-core": "^6.26.3",
+    "@types/jest": "^23.3.9",
+    "babel-core": "^7.0.0-bridge",
     "babel-jest": "^23.6.0",
     "flow-bin": "^0.85.0",
     "flow-typed": "^2.5.1",
