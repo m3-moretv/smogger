@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "./lib/index.js",
+  "bin": "./lib/scripts/bin.js",
   "scripts": {
     "build": "babel src/ -d lib/",
-    "build:dev": "babel src/ -d lib/ --watch --source-maps inline",
+    "build:dev": "babel src/ -d lib/ --watch --source-maps",
     "test": "jest",
     "flow:deps": "flow-typed install"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "commander": "^2.19.0",
     "node-fetch": "^2.2.1"
   },
   "devDependencies": {
