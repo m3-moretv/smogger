@@ -14,7 +14,10 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^2.19.0",
+    "koa": "^2.6.1",
+    "koa-router": "^7.4.0",
     "node-fetch": "^2.2.1",
+    "rxjs": "^6.3.3",
     "swagger-parser": "^6.0.2"
   },
   "devDependencies": {
