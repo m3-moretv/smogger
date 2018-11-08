@@ -3,13 +3,13 @@ import { createRouter } from "./generate";
 import { validatorMiddleware } from "./validate";
 export const app = new Koa();
 
-export const listen = (port: number = 3000, spec) => {
+export const listen = (spec, { port }) => {
   const router = createRouter(spec);
   const middleware = validatorMiddleware(spec);
   app
     .use(router.routes())
-    .use(router.allowedMethods())
-    .use(middleware);
+    .use(router.allowedMethods());
 
   app.listen(port);
+  return app;
 };

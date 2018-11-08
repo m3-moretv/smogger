@@ -1,7 +1,7 @@
 import SwaggerParser from "swagger-parser";
 
-type Parser = (specPath: string) => Promise<{}>
+type Download = (specPath: string) => Promise<{}>
 
-export const parser: Parser = async (specPath) => {
+export const download: Download = async (specPath) => {
   return await SwaggerParser.parse(specPath);
 };

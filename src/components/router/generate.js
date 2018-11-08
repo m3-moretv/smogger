@@ -28,13 +28,25 @@ type Paths = {
   [key: string]: Path
 }
 
+const METHODS_MAP = {
+  'get': 'get',
+  'post': 'post',
+  'put': 'put',
+  'delete': 'del'
+};
 const insertParamsToUrl = (path: string): string => path.replace(/{(\w+)}/g, `:$1`);
+const getRouterMethodByName = (httpMethod: string): string => {
+  const name = METHODS_MAP[httpMethod];
+  if (!name) { throw new Error(`Method ${httpMethod} is not supported`); }
+  return name;
+};
 
 const addPathToRouter = (router) => ([path, params]) => {
   const methods = Object.entries(params);
   const pathWithParams = insertParamsToUrl(path);
   methods.forEach(([name, config]) => {
-    router[name.toLowerCase()](config.operationId, pathWithParams, (ctx, next) => {
+    router[getRouterMethodByName(name)](config.operationId, pathWithParams, (ctx, next) => {
+      ctx.state.params = params;
       ctx.body = `${config.summary}; ${JSON.stringify(ctx.params)}`;
       next();
     });
