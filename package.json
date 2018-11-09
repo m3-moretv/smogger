@@ -6,7 +6,7 @@
   "bin": "./lib/scripts/bin.js",
   "scripts": {
     "build": "babel src/ -d lib/",
-    "build:dev": "babel src/ -d lib/ --watch --source-maps",
+    "build:dev": "babel src/ -d lib/ --watch --source-maps inline",
     "test": "jest",
     "flow:deps": "flow-typed install"
   },

@@ -1,7 +1,14 @@
 import SwaggerParser from "swagger-parser";
 
-type Download = (specPath: string) => Promise<{}>
+let SPEC = null;
 
-export const download: Download = async (specPath) => {
-  return await SwaggerParser.parse(specPath);
+const getSpec = () => {
+  if (SPEC === undefined) { throw new Error(`Spec didn't loaded. Use setSpec()`); }
+  return SPEC;
+};
+
+export const setSpec = spec => SPEC = spec;
+
+export const getMethodModel: (path: string, method: string) => any = (path, method) => {
+
 };

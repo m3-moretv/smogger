@@ -1,11 +1,9 @@
 import Koa from 'koa';
 import { createRouter } from "./generate";
-import { validatorMiddleware } from "./validate";
 export const app = new Koa();
 
-export const listen = (spec, { port }) => {
-  const router = createRouter(spec);
-  const middleware = validatorMiddleware(spec);
+export const listen = (paths, { port }) => {
+  const router = createRouter(paths);
   app
     .use(router.routes())
     .use(router.allowedMethods());

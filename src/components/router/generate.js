@@ -1,60 +1,30 @@
 import Router from 'koa-router';
-import { Observable } from 'rxjs';
+import { normalizer, entries, run, spreadToArgs } from "../../utils/utils";
+import type { Paths } from "../../types/Swagger";
 
-type Schema = {
-  format: string;
-  type: string;
-};
+const normalizeUrlParams = (path: string): string => path.replace(/{(\w+)}/g, `:$1`);
+const setRouteName = (operationId: string): ?string => operationId || null;
+const defaultResponse = ctx => ctx.body = `${ctx.routerName}: ${JSON.stringify(ctx.params, null, 2)}`;
 
-type Parameter = {
-  description?: string;
-  name: string;
-  required?: boolean;
-  in: 'query' | 'body';
-  schema: Schema
-}
-
-type Method = {
-  operationId?: string;
-  parameters: Array<Parameter>;
-  summary?: string;
-}
-
-type Path = {
-  [key: string] : Method
-}
-
-type Paths = {
-  [key: string]: Path
-}
-
-const METHODS_MAP = {
-  'get': 'get',
-  'post': 'post',
-  'put': 'put',
-  'delete': 'del'
-};
-const insertParamsToUrl = (path: string): string => path.replace(/{(\w+)}/g, `:$1`);
-const getRouterMethodByName = (httpMethod: string): string => {
-  const name = METHODS_MAP[httpMethod];
-  if (!name) { throw new Error(`Method ${httpMethod} is not supported`); }
-  return name;
-};
-
-const addPathToRouter = (router) => ([path, params]) => {
-  const methods = Object.entries(params);
-  const pathWithParams = insertParamsToUrl(path);
-  methods.forEach(([name, config]) => {
-    router[getRouterMethodByName(name)](config.operationId, pathWithParams, (ctx, next) => {
-      ctx.state.params = params;
-      ctx.body = `${config.summary}; ${JSON.stringify(ctx.params)}`;
-      next();
-    });
-  });
-};
+const createMethod =
+  router => // save router
+    path => // save path
+      (type, {operationId}) => // bind method to router with saved path
+        router[type].bind(router, setRouteName(operationId), path, defaultResponse);
 
 export const createRouter = (paths: Paths, config = {}) => {
   const router = new Router(config);
-  Object.entries(paths).forEach(addPathToRouter(router));
+  const createMethodWithRouter = createMethod(router);
+
+  entries(paths)
+    .map(([path, methods]) => [normalizeUrlParams(path), methods]) // /path/{param} => /path/:param
+    .map(([path, methods]) => [createMethodWithRouter(path), entries(methods)]) // Создаем функцию для привязки метода к пути и получаем [methodName, methodParams]
+    .reduce(
+      normalizer(
+        ([bindMethodToRouter, methods]) => methods.map(spreadToArgs(bindMethodToRouter)) // bindMethodToRouter <- methodProps, возвращаем функцию привязки метода со всеми пропсами
+      ), []
+    )
+    .forEach(run); // Привязываем каждый метод к роутеру
+
   return router;
 };
