@@ -4,7 +4,10 @@ import type { Paths } from "../../types/Swagger";
 
 const normalizeUrlParams = (path: string): string => path.replace(/{(\w+)}/g, `:$1`);
 const setRouteName = (operationId: string): ?string => operationId || null;
-const defaultResponse = ctx => ctx.body = `${ctx.routerName}: ${JSON.stringify(ctx.params, null, 2)}`;
+const defaultResponse = (ctx, next) => {
+  ctx.body = `${ctx.routerName}: ${JSON.stringify(ctx.params, null, 2)}`;
+  next();
+};
 
 const createMethod =
   router => // save router

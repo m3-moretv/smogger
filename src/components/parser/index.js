@@ -3,7 +3,7 @@ import SwaggerParser from "swagger-parser";
 let SPEC = null;
 
 const getSpec = () => {
-  if (SPEC === undefined) { throw new Error(`Spec didn't loaded. Use setSpec()`); }
+  if (SPEC === undefined) { throw new Error(`Spec didn't loaded (or passed to parser). Use setSpec()`); }
   return SPEC;
 };
 
