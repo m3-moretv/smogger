@@ -3,11 +3,13 @@ export type Schema = {
   type: string;
 };
 
+export type ParametrIn = 'query' | 'body' | 'path';
+
 export type Parameter = {
   description?: string;
   name: string;
   required?: boolean;
-  in: 'query' | 'body';
+  in: ParametrIn;
   schema: Schema
 }
 

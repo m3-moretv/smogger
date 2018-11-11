@@ -3,7 +3,7 @@ import SwaggerParser from "swagger-parser";
 import { configure } from "./components/configure";
 import { setSpec } from "./components/parser";
 import { listen } from "./components/router";
-import { createMiddleware } from "./components/validator";
+import { createMiddleware, typesPathProps, requiredPathProps } from "./components/validator";
 
 
 const config = configure();
@@ -14,7 +14,5 @@ SwaggerParser.parse(SPEC_PATH)
   .then(setSpec)
   .then(spec => {
     const router = listen(spec.paths, {port: PORT});
-    const validators = createMiddleware(router, [(ctx) => {
-      debugger
-    }]);
+    const validators = createMiddleware(router, [requiredPathProps, typesPathProps]);
   });

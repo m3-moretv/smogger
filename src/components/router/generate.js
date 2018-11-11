@@ -1,8 +1,7 @@
 import Router from 'koa-router';
-import { normalizer, entries, run, spreadToArgs } from "../../utils/utils";
+import { normalizer, entries, run, spreadToArgs, formatRouterPath } from "../../utils/utils";
 import type { Paths } from "../../types/Swagger";
 
-const normalizeUrlParams = (path: string): string => path.replace(/{(\w+)}/g, `:$1`);
 const setRouteName = (operationId: string): ?string => operationId || null;
 const defaultResponse = (ctx, next) => {
   ctx.body = `${ctx.routerName}: ${JSON.stringify(ctx.params, null, 2)}`;
@@ -20,7 +19,7 @@ export const createRouter = (paths: Paths, config = {}) => {
   const createMethodWithRouter = createMethod(router);
 
   entries(paths)
-    .map(([path, methods]) => [normalizeUrlParams(path), methods]) // /path/{param} => /path/:param
+    .map(([path, methods]) => [formatRouterPath(path), methods]) // /path/{param} => /path/:param
     .map(([path, methods]) => [createMethodWithRouter(path), entries(methods)]) // Создаем функцию для привязки метода к пути и получаем [methodName, methodParams]
     .reduce(
       normalizer(
