@@ -3,7 +3,9 @@ import SwaggerParser from "swagger-parser";
 import { configure } from "./components/configure";
 import { setSpec } from "./components/parser";
 import { listen } from "./components/router";
-import { createMiddleware, checkPathProps } from "./components/validator";
+import { createMiddleware } from "./utils/utils";
+import { checkPathProps } from "./components/validator";
+import { mockData } from "./components/mocker";
 
 const config = configure();
 const SPEC_PATH = config.spec;
@@ -13,5 +15,5 @@ SwaggerParser.parse(SPEC_PATH)
   .then(setSpec)
   .then(spec => {
     const router = listen(spec.paths, {port: PORT});
-    const validators = createMiddleware(router, [checkPathProps]);
+    createMiddleware(router, [checkPathProps, mockData]);
   });

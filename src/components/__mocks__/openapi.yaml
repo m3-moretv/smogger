@@ -1,0 +1,433 @@
+openapi: "3.0.0"
+info:
+  version: "0.0.7"
+  title: "MoreTV Client API"
+  description: "API More.tv для клиентов - веб приложения, мобильное приложение и смарт-тв"
+  license:
+    name: Proprietary
+paths:
+  /app/screenGrid/{screenName}:
+    get:
+      summary: Сетка виджетов для отображения в мобильном приложении
+      tags:
+      - Mobile Application
+      parameters:
+      - name: screenName
+        in: path
+        required: true
+        description: Идентификатор экрана
+        schema:
+          type: string
+          example: 'main'
+      responses:
+        '200':
+          description: Данные успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppScreenGrid'
+
+  /{platform}/sliders/{sliderId}:
+    get:
+      summary: Данные слайдера для отображения
+      tags:
+      - Slider
+      parameters:
+      - name: sliderId
+        in: path
+        required: true
+        description: Идентификатор слайдера
+        schema:
+          type: string
+          example: '1'
+      - name: platform
+        in: path
+        required: true
+        description: Идентификатор слайдера
+        schema:
+          type: string
+          enum: ['web', 'app', 'tv']
+          example: 'app'
+      responses:
+        '200':
+          description: Данные слайдера успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/Slider'
+
+  /{platform}/projects/{projectId}:
+    get:
+      summary: Данные проекта
+      tags:
+      - Project
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: Идентификатор проекта
+        schema:
+          type: string
+          example: '1'
+      - name: platform
+        in: path
+        required: true
+        description: Идентификатор платформы
+        schema:
+          type: string
+          enum: ['web', 'app', 'tv']
+          example: 'app'
+      responses:
+        '200':
+          description: Данные проекта успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/Project'
+        '404':
+          description: Проект не найден
+
+  /{platform}/projects/{projectId}/tracks/:
+    get:
+      summary: Список треков для проекта
+      tags:
+      - Project
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: Идентификатор проекта
+        schema:
+          type: string
+          example: '1'
+      - name: platform
+        in: path
+        required: true
+        description: Идентификатор платформы
+        schema:
+          type: string
+          enum: ['web', 'app', 'tv']
+          example: 'app'
+      responses:
+        '200':
+          description: Список треков для проекта успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+        '404':
+          description: Проект не найден
+
+
+  /{platform}/tracks/{trackId}:
+    get:
+      summary: Данные трека
+      tags:
+      - Project
+      parameters:
+      - name: trackId
+        in: path
+        required: true
+        description: Идентификатор трека
+        schema:
+          type: string
+          example: '1'
+      - name: platform
+        in: path
+        required: true
+        description: Идентификатор платформы
+        schema:
+          type: string
+          enum: ['web', 'app', 'tv']
+          example: 'app'
+      responses:
+        '200':
+          description: Данные трека успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/Track'
+        '404':
+          description: Трек не найден
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    AppScreenGrid:
+      properties:
+        items:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/AppScreenGridWidget'
+            - $ref: '#/components/schemas/AppScreenGridGroupWidget'
+    AppScreenGridWidget:
+      properties:
+        title:
+          type: string
+          nullable: true
+          description: Заголовок для вижета
+          example: 'Связные проекты'
+        type:
+          type: string
+          description: Тип виджета для отображения
+          example: 'widget-projects-large'
+        contentType:
+          type: string
+          description: Тип ожидаемого контента
+          example: 'widget-digest'
+        contentId:
+          type: string
+          description: Идентификатор контента
+          example: 'main'
+    AppScreenGridGroupWidget:
+      properties:
+        title:
+          type: string
+          nullable: true
+          description: Заголовок для вижета
+          example: 'Связные проекты'
+        type:
+          type: string
+          description: Тип блока
+          example: 'tabs'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppScreenGridWidget'
+    Genre:
+      properties:
+        id:
+          type: integer
+          description: Идентификатор жанра
+          example: 23
+        label:
+          type: string
+          description: Языковая метка
+          example: 'ужасы'
+    Project:
+      properties:
+        id:
+          type: integer
+          description: Идентифиткатор проекта
+          example: 364832
+        hubId:
+          type: string
+          description: Идентификатор проекта в HUB
+          example: '2453245'
+        type:
+          type: string
+          enum: ['MULTIPART_MOVIE', 'MOVIE', 'SERIES']
+          description: Тип проекта (Многосерийный, Полнометражный, Сериал)
+        category:
+          type: string
+          enum: ['SHOW', 'SERIES', 'TV_PROGRAMME', 'MOVIE', 'CARTOON']
+          description: Категория проекта (Шоу, Сериалы, Программы, Фильмы, Мультфильмы)
+        isActive:
+          type: boolean
+          description: Флаг опубликованности проекта
+          example: true
+        title:
+          type: string
+          description: Название проекта
+          example: Ивановы Ивановы
+        originTitle:
+          type: string
+          description: Название проекта на языке оригинала
+          example: Ивановы Ивановы
+        brief:
+          type: string
+          description: Краткое описание
+          example: Семейный многосерийный фильм
+        description:
+          type: string
+          description: Полное описание
+          example: Фильм повествует историю одного человека, который благодаря ничему незачем никогда вот так вот
+        genres:
+          type: array
+          description: Список жанров
+          items:
+            $ref: '#/components/schemas/Genre'
+        releaseDate:
+          type: string
+          format: date
+          example: '2007-07-16T19:20:30.45+01:00'
+        closeDate:
+          type: string
+          format: date
+          nullable: true
+          example: '2007-07-16T19:20:30.45+01:00'
+        migAge:
+          type: integer
+          example: 18
+        checkAge:
+          type: boolean
+          example: true
+        rating:
+          type: number
+          format: double
+          example: 9.2353
+        provider:
+          allOf:
+          - $ref: '#/components/schemas/Provider'
+    Provider:
+      properties:
+        id:
+          type: integer
+          description: Внутренний идентификатор провайдера
+          example: 23123
+        hubId:
+          type: string
+          description: Идентификатор провайдера в HUB
+          example: '623487234'
+        channelId:
+          type: integer
+          nullable: true
+          description: Идентификатор канала
+          example: 2314
+        title:
+          type: string
+          description: Название провайдера
+          example: 'СТС'
+        description:
+          type: string
+          description: Описание провайдера
+          example: 'Лучший в мире телеканал'
+        logo:
+          type: string
+          description: Ссылка на изображение с логотипом
+          example: 'http://image.move.tv/23412341234.jpeg'
+    Slider:
+      properties:
+        id:
+          type: integer
+          description: Идентификатор слайдера
+        isActive:
+          type: boolean
+          description: Слайдер активен для показа
+        slides:
+          description: Массив активный слайдов отсортированных по позиции
+          type: array
+          items:
+            $ref: '#/components/schemas/Slide'
+    Slide:
+      properties:
+        id:
+          type: integer
+          description: Идентификатор слайда
+          example: 17
+        title:
+          type: string
+          description: Название слайда для пользователей
+          example: 'Заголовок слайда'
+        description:
+          type: string
+          description: Описание
+          example: 'Описание на слайде'
+        image:
+          type: string
+          description: Ссылка на изображение для фона слайда
+          example: 'https://images.more.tv/940928304/20938402.jpg'
+        link:
+          type: string
+          description: Ссылка ведущая со слайда
+          example: 'http://more.tv/'
+        projectId:
+          type: integer
+          nullable: true
+          description: Идентификатор проекта (связь с сущностью Project)
+          example: 45345
+        projectRating:
+          type: number
+          nullable: true
+          format: float
+          example: 9.2313
+        badge:
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/SlideBadge'
+        button:
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/SlideButton'
+    SlideButton:
+      properties:
+        text:
+          type: string
+          description: Тип кнопки #todo format ?
+          example: 'click me'
+        color:
+          type: string
+          description: Цвет кнопки #todo format ?
+          example: 'blue'
+    SlideBadge:
+      properties:
+        text:
+          type: string
+          description: Текст бейджа #todo format ?
+          example: 'hit'
+        color:
+          type: string
+          description: Цвет бейжда #todo format ?
+          example: 'red'
+    Track:
+      properties:
+        id:
+          type: integer
+          description: Идентификатор трека
+          example: 3223
+        hubId:
+          type: string
+          description: Идентификатор трека в HUB
+        seasonId:
+          type: integer
+          nullable: true
+          description: Идентификатор сезона
+        projectId:
+          type: integer
+          description: Идентификатор проекта
+        numInProject:
+          type: integer
+          description: Порядковый номер в проекте
+        numInSeason:
+          type: integer
+          nullable: true
+          description: Порядковый номер в сезоне
+        type:
+          type: string
+          enum: ['NORMAL', 'PROMO', 'TRAILER', 'PREVIEW']
+          description: Тип трека (обычный, промо ролик, трейдел, предпросмотр)
+        isActive:
+          type: boolean
+          description: Флаг опубликованности трека
+        title:
+          type: string
+          description: Название трека
+        description:
+          type: string
+          description: Описание трека
+        duration:
+          type: integer
+          description: Продолжительность трека в секундах

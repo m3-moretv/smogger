@@ -1,26 +1,39 @@
 export type Schema = {
   format: string;
   type: string;
+  properties?: {}
 };
 
-export type ParametrIn = 'query' | 'body' | 'path';
+export type ParameterIn = 'query' | 'body' | 'path';
 
 export type Parameter = {
   description?: string;
   name: string;
   required?: boolean;
-  in: ParametrIn;
+  in: ParameterIn;
   schema: Schema
+}
+
+export type Response = {
+  description?: string;
+  content: {
+    [contentType: string]: {
+      schema: Schema
+    }
+  };
 }
 
 export type Method = {
   operationId?: string;
-  parameters: Array<Parameter>;
+  parameters?: Array<Parameter>;
   summary?: string;
+  responses: {
+    [status: string | number]: Response
+  }
 }
 
 export type Path = {
-  [key: string] : Method
+  [httpMethod: string]: Method
 }
 
 export type Paths = {
