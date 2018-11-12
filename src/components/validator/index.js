@@ -1,4 +1,5 @@
-import { formatSwaggerPath, run } from "../../utils/utils";
+import Joi from 'joi';
+import { formatSwaggerPath, run, dataToResponse } from "../../utils/utils";
 import { getMethodModel } from "../parser";
 import { Parameter, ParametrIn } from "../../types/Swagger";
 import { Context, NextFn } from "../../types/Router";
@@ -20,7 +21,7 @@ const filterParamsByType: (type: ParametrIn) => (param: Parameter) => boolean
   = type => param => param.in === type;
 const filterRequiredParams: (param: Parameter) => boolean
   = ({required}) => required;
-const exposeParams = ctx => {
+const exposeParams: (ctx: Context) => {params: {}, rules: Array<Parameter>} = ctx => {
   const {params, req: {method}, _matchedRoute} = ctx;
   const path = formatSwaggerPath(_matchedRoute);
   const rules = getMethodModel(path, method).parameters;
@@ -30,18 +31,35 @@ const exposeParams = ctx => {
     rules
   };
 };
-
-export const requiredPathProps: Validator = (ctx) => {
-  const {params, rules} = exposeParams(ctx);
-  const requiredParams = rules.filter(filterParamsByType('path')).filter(filterRequiredParams);
-  const missedParams = requiredParams.filter((prop) => !params[prop.name]);
-
-  if (missedParams.length) {
-    ctx.body = `Missed url props: ${missedParams.map(p => p.name).join(',')}`
+const getSchemaType = (type) => {
+  switch (type) {
+    case 'number':
+    case 'integer':
+      return 'number';
+    default:
+      return type;
   }
 };
 
-export const typesPathProps: Validator = (ctx) => {
+const createSchema = (rules: Array<Parameter>) => {
+  const schema = rules.reduce((schema, rule) => {
+    const type = getSchemaType(rule.schema.type);
+    schema[rule.name] = Joi[type]();
+    if (rule.required) { schema[rule.name].required() }
+    return schema;
+  }, {});
+
+  return Joi.object(schema);
+};
+
+export const checkPathProps: Validator = (ctx) => {
   const {params, rules} = exposeParams(ctx);
-  debugger;
+  const schema = createSchema(rules);
+  const result = Joi.validate(params, schema);
+
+  if (result.error) {
+    dataToResponse({
+      error: result.error.details
+    }, ctx)
+  }
 };
