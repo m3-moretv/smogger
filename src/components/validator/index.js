@@ -5,9 +5,9 @@ import type { Processor } from "../../utils/utils";
 
 const createSchema = (rules: Array<Parameter>) => {
   const schema = rules.reduce((schema, rule) => {
-    const type = getValidJoiType(rule.type || rule.schema.type);
-    schema[rule.name] = Joi[type]();
-    if (rule.required) { schema[rule.name].required() }
+    const type = getValidJoiType(rule.type);
+    const joiSchema = Joi[type]();
+    if (rule.required) { schema[rule.name] = joiSchema.required() }
     return schema;
   }, {});
 
@@ -16,11 +16,11 @@ const createSchema = (rules: Array<Parameter>) => {
 
 export const checkPathProps: Processor = (params, {parameters}) => {
   const schema = createSchema(parameters);
-  const {error: {details: error}} = Joi.validate(params, schema);
+  const {error} = Joi.validate(params, schema);
 
   if (error) {
     return {
-      error
+      error: error.details
     };
   }
 };

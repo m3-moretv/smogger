@@ -1,5 +1,5 @@
 import SwaggerParser from "swagger-parser";
-import type { ContentType, Method } from "../../types/Swagger";
+import type { ContentType, HTTPMethod, Method, Schema } from "../../types/Swagger";
 
 let SPEC = null;
 
@@ -12,7 +12,7 @@ const parseRef = (ref: string) => ref.split('/').slice(1).reduce((acc, part) => 
 
 export const setSpec = spec => SPEC = spec;
 
-export const getMethodModel: (path: string, method: string) => Method = (path, method) => {
+export const getMethodModel: (path: string, method: HTTPMethod) => Method = (path, method) => {
   return getSpec().paths[path][method.toLowerCase()];
 };
 
@@ -22,7 +22,7 @@ export const getResponse: (method: Method, status?: number, contentType?: Conten
   return resolveRef(schema);
 };
 
-export const resolveRef = (schema: {$ref?: string}) => {
+export const resolveRef = (schema: Schema) => {
   if (schema.$ref) { return parseRef(schema.$ref); }
   return schema;
 };
