@@ -1,7 +1,6 @@
 import SwaggerParser from "swagger-parser";
 import { setSpec } from "../parser";
 import { checkPathProps } from "./index";
-import type { DataFormat, DataTypes, Parameter, ParameterIn, Schema } from "../../types/Swagger";
 
 beforeAll(() => {
   return SwaggerParser.parse(`src/components/__mocks__/openapi.yaml`).then(setSpec);
@@ -37,4 +36,19 @@ test('Error without required props', () => {
     summary: 'test descr'
   });
   expect(result).toHaveProperty('error');
+});
+
+test('Check number type props', () => {
+  const result = checkPathProps({
+    test_number: 'ooops'
+  }, {
+    operationId: 'testOperation',
+    summary: 'test descr',
+    parameters: [{
+      name: 'test_number',
+      in: 'path',
+      type: 'number'
+    }]
+  });
+  expect(result.error[0]).toHaveProperty('type', 'number.base');
 });

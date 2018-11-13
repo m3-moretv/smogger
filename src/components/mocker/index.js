@@ -1,7 +1,7 @@
-import type { Processor } from "../../utils/utils";
-import { entries, exposeParams, dataToResponse } from "../../utils/utils";
+import { entries } from "../../utils/utils";
 import { getResponse, resolveRef } from "../parser";
 import faker from 'faker';
+import type { Processor } from "../router";
 
 const formatFakerTypes = (type) => {
   switch(type) {

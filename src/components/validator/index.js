@@ -1,12 +1,13 @@
 import Joi from 'joi';
 import { getValidJoiType } from "../../utils/utils";
 import { Parameter } from "../../types/Swagger";
-import type { Processor } from "../../utils/utils";
+import type { Processor } from "../router";
 
 const createSchema = (rules: Array<Parameter>) => {
   const schema = rules.reduce((schema, rule) => {
     const type = getValidJoiType(rule.type);
     const joiSchema = Joi[type]();
+    schema[rule.name] = joiSchema;
     if (rule.required) { schema[rule.name] = joiSchema.required() }
     return schema;
   }, {});

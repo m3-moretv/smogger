@@ -2,8 +2,7 @@
 import SwaggerParser from "swagger-parser";
 import { configure } from "./components/configure";
 import { setSpec } from "./components/parser";
-import { listen } from "./components/router";
-import { createMiddleware } from "./utils/utils";
+import { createMiddleware, listen } from "./components/router";
 import { checkPathProps } from "./components/validator";
 import { mockData } from "./components/mocker";
 
