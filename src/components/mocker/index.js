@@ -26,12 +26,24 @@ const mockArray = (schema) => {
   return new Array(10).fill().map(() => createFakeData(resolvedSchema));
 };
 
+const mockObject = (schema) => {
+  return {};
+};
+
+const mockPrimitive = (schema) => {
+  return '';
+};
+
 const mock = (schema) => {
+  if (schema.type === undefined) { return mock(schema.properties); }
+
   switch(schema.type) {
     case 'array':
       return mockArray(schema.items);
+    case 'object':
+      return mock(schema.properties);
     default:
-      return {};
+      return mockPrimitive(schema);
   }
 };
 

@@ -20,3 +20,5 @@ export const getValidJoiType: (type: DataTypes) => string = (type) => {
       return type;
   }
 };
+
+export const randomElement: (arr: Array<any>) => any = (arr) => arr[Math.floor(Math.random() * (arr.length-1))];
