@@ -35,9 +35,7 @@ const mock = (schema) => {
   }
 };
 
-export const mockData: Processor = (ctx) => {
-  const { model } = exposeParams(ctx);
+export const mockData: Processor = (params, model) => {
   const responseModel = getResponse(model);
-  const data = mock(responseModel);
-  dataToResponse(data, ctx);
+  return mock(responseModel);
 };

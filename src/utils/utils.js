@@ -1,9 +1,9 @@
-import type { Context } from "../types/Router";
-import type { Method } from "../types/Swagger";
+import type { Context, RouteParams } from "../types/Router";
+import type { DataTypes, Method } from "../types/Swagger";
 import { getMethodModel } from "../components/parser";
 
-export type Processor = (ctx: Context) => void;
-type CreateMiddleware = (router: KoaRouter$Middleware, processor: Array<Processor>) => KoaRouter$Middleware;
+export type Processor = (params: RouteParams, model: Method, data: any) => any;
+type CreateMiddleware = (router: KoaRouter$Middleware, processors: Array<Processor>) => KoaRouter$Middleware;
 
 export const entries: (obj: {}) => Array<string, any> = Object.entries.bind(Object);
 export const run: (Function) => any = fn => fn();
@@ -14,13 +14,7 @@ export const normalizeUrlParams = (subst: RegExp, brackets?: string = ':$1') => 
 export const formatSwaggerPath: (path: string) => string = normalizeUrlParams(/:(\w+)/g, '{$1}');
 export const formatRouterPath: (path: string) => string = normalizeUrlParams(/{(\w+)}/g, ':$1');
 
-export const createMiddleware: CreateMiddleware = (router, runners) => router.use((ctx, next) => {
-  if (!ctx.matched.length) { return next() }
-  runners.forEach(runner => runner(ctx));
-  next();
-});
-
-export const exposeParams: (ctx: Context) => {params: {}, model: Method} = ctx => {
+export const exposeParams: (ctx: Context) => {params: RouteParams, model: Method} = ctx => {
   const {params, req: {method}, _matchedRoute} = ctx;
   const path = formatSwaggerPath(_matchedRoute);
   const model = getMethodModel(path, method);
@@ -30,7 +24,15 @@ export const exposeParams: (ctx: Context) => {params: {}, model: Method} = ctx =
   };
 };
 
-export const getValidJoiType: (type: string) => string = (type) => {
+export const createMiddleware: CreateMiddleware = (router, processors) => router.use((ctx, next) => {
+  if (ctx.matched.length) { return next() }
+  const {params, model} = exposeParams(ctx);
+  const data = processors.reduce((data = {}, processor) => Object.assign(data, processor(params, model, data)));
+  dataToResponse(data, ctx);
+  next();
+});
+
+export const getValidJoiType: (type: DataTypes) => string = (type) => {
   switch (type) {
     case 'number':
     case 'integer':

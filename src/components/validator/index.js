@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { dataToResponse, exposeParams, getValidJoiType } from "../../utils/utils";
+import { getValidJoiType } from "../../utils/utils";
 import { Parameter } from "../../types/Swagger";
 import type { Processor } from "../../utils/utils";
 
@@ -14,14 +14,13 @@ const createSchema = (rules: Array<Parameter>) => {
   return Joi.object(schema);
 };
 
-export const checkPathProps: Processor = (ctx) => {
-  const {params, model: {parameters}} = exposeParams(ctx);
+export const checkPathProps: Processor = (params, {parameters}) => {
   const schema = createSchema(parameters);
-  const result = Joi.validate(params, schema);
+  const {error: {details: error}} = Joi.validate(params, schema);
 
-  if (result.error) {
-    dataToResponse({
-      error: result.error.details
-    }, ctx)
+  if (error) {
+    return {
+      error
+    };
   }
 };

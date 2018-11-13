@@ -1,5 +1,5 @@
 import SwaggerParser from "swagger-parser";
-import type { Method } from "../../types/Swagger";
+import type { ContentType, Method } from "../../types/Swagger";
 
 let SPEC = null;
 
@@ -16,7 +16,7 @@ export const getMethodModel: (path: string, method: string) => Method = (path, m
   return getSpec().paths[path][method.toLowerCase()];
 };
 
-export const getResponse: (method: Method, status?: number, contentType?: string) => Response
+export const getResponse: (method: Method, status?: number, contentType?: ContentType) => Response
   = (method, status = 200, contentType = 'application/json') => {
   const schema = method.responses[status].content[contentType].schema;
   return resolveRef(schema);
