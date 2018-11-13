@@ -11,14 +11,4 @@ export const normalizeUrlParams = (subst: RegExp, brackets?: string = ':$1') => 
 export const formatSwaggerPath: (path: string) => string = normalizeUrlParams(/:(\w+)/g, '{$1}');
 export const formatRouterPath: (path: string) => string = normalizeUrlParams(/{(\w+)}/g, ':$1');
 
-export const getValidJoiType: (type: DataTypes) => string = (type) => {
-  switch (type) {
-    case 'number':
-    case 'integer':
-      return 'number';
-    default:
-      return type;
-  }
-};
-
-export const randomElement: (arr: Array<any>) => any = (arr) => arr[Math.floor(Math.random() * (arr.length-1))];
+export const randomElement: (arr: Array<any>) => any = (arr) => arr[Math.floor(Math.random() * arr.length | 0)];

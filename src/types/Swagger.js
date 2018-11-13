@@ -15,7 +15,7 @@ export type ObjectModificator = {
 }
 
 export type ArrayModificator = {
-  items?: Schema;
+  items?: Array<Schema>;
   minItems?: number;
   maxItems?: number;
   uniqueItems?: boolean;
@@ -36,13 +36,15 @@ export type StringModificator = {
   pattern?: string;
 }
 
-export type Schema = {
-  $ref?: string;
-  format?: DataFormat;
+export type SchemaMain = {
   type: DataTypes;
+  format?: DataFormat;
+  $ref?: string;
   readOnly?: boolean;
   writeOnly?: boolean;
-} & NumberModificator & StringModificator & ArrayModificator & ObjectModificator;
+}
+
+export type Schema = SchemaMain | NumberModificator | StringModificator | ArrayModificator | ObjectModificator;
 
 export type Parameter = {
   description?: string;

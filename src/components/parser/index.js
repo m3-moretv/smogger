@@ -16,13 +16,13 @@ export const getMethodModel: (path: string, method: HTTPMethod) => Method = (pat
   return getSpec().paths[path][method.toLowerCase()];
 };
 
-export const getResponse: (method: Method, status?: number, contentType?: ContentType) => Response
+export const resolveRef = (schema: Schema) => {
+  if ('$ref' in schema) { return parseRef(schema.$ref); }
+  return schema;
+};
+
+export const getResponse: (method: Method, status?: number, contentType?: ContentType) => Schema
   = (method, status = 200, contentType = 'application/json') => {
   const schema = method.responses[status].content[contentType].schema;
   return resolveRef(schema);
-};
-
-export const resolveRef = (schema: Schema) => {
-  if (schema.$ref) { return parseRef(schema.$ref); }
-  return schema;
 };

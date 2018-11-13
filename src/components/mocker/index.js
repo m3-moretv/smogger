@@ -2,6 +2,8 @@ import { entries } from "../../utils/utils";
 import { getResponse, resolveRef } from "../parser";
 import faker from 'faker';
 import type { Processor } from "../router";
+import type { Schema } from "../../types/Swagger";
+import { allOf, anyOf, oneOf } from "./combiners";
 
 const formatFakerTypes = (type) => {
   switch(type) {
@@ -10,41 +12,35 @@ const formatFakerTypes = (type) => {
       return 'number';
     case 'string':
       return 'words';
-  }
-};
-
-const createFakeData = (schema) => {
-  const {properties, required} = schema;
-  return entries(properties).reduce((acc, [key, prop]) => {
-    acc[key] = faker.random[formatFakerTypes(prop.type)]();
-    return acc;
-  }, {});
-};
-
-const mockArray = (schema) => {
-  const resolvedSchema = resolveRef(schema);
-  return new Array(10).fill().map(() => createFakeData(resolvedSchema));
-};
-
-const mockObject = (schema) => {
-  return {};
-};
-
-const mockPrimitive = (schema) => {
-  return '';
-};
-
-const mock = (schema) => {
-  if (schema.type === undefined) { return mock(schema.properties); }
-
-  switch(schema.type) {
-    case 'array':
-      return mockArray(schema.items);
-    case 'object':
-      return mock(schema.properties);
     default:
-      return mockPrimitive(schema);
+      return type;
   }
+};
+
+const createFakeData = ({type}) => faker.random[formatFakerTypes(type)]();
+
+const mock = (schema: Schema) => {
+  if ('$ref' in schema) {
+    return mock(resolveRef(schema));
+  }
+
+  if ('properties' in schema) {
+    return entries(schema.properties).reduce((result, [key, property]) => {
+      result[key] = mock(property);
+      return result;
+    }, {});
+  }
+
+  if ('items' in schema) {
+    let combiner = () => schema.items;
+    if ('oneOf' in schema.items) {combiner = oneOf(schema.items.oneOf)}
+    if ('anyOf' in schema.items) {combiner = anyOf(schema.items.anyOf)}
+    if ('allOf' in schema.items) {combiner = allOf(schema.items.allOf)}
+
+    return new Array(10).fill().map(() => mock(combiner()));
+  }
+
+  return createFakeData(schema);
 };
 
 export const mockData: Processor = (params, model) => {

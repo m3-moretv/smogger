@@ -19,11 +19,10 @@ export const exposeParams: (ctx: Context) => {params: RouteParams, model: Method
 };
 
 export const createMiddleware: CreateMiddleware = (router, processors) => router.use((ctx, next) => {
-  if (ctx.matched.length) { return next() }
+  if (!ctx.matched.length) { return next() }
   const {params, model} = exposeParams(ctx);
-  const data = processors.reduce((data = {}, processor) => Object.assign(data, processor(params, model, data)));
+  const data = processors.reduce((data, processor) => Object.assign(data, processor(params, model, data)), {});
   dataToResponse(data, ctx);
-  next();
 });
 
 export const listen = (paths, { port }) => {

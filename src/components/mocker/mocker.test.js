@@ -59,3 +59,9 @@ test('allOf assigned combiners', () => {
   expect(combiner).toHaveProperty('id');
   expect(combiner).toHaveProperty('bark')
 });
+
+test('create mock data', () => {
+  const response = getMethodModel('/app/screenGrid/{screenName}', 'get');
+  const data = mockData({}, response);
+  expect(data).toBe(true);
+});

@@ -1,11 +1,21 @@
 import Joi from 'joi';
-import { getValidJoiType } from "../../utils/utils";
 import { Parameter } from "../../types/Swagger";
 import type { Processor } from "../router";
+import type { DataTypes } from "../../types/Swagger";
+
+const getValidJoiType: (type: DataTypes) => string = (type) => {
+  switch (type) {
+    case 'number':
+    case 'integer':
+      return 'number';
+    default:
+      return type;
+  }
+};
 
 const createSchema = (rules: Array<Parameter>) => {
   const schema = rules.reduce((schema, rule) => {
-    const type = getValidJoiType(rule.type);
+    const type = getValidJoiType(rule.type || rule.schema.type);
     const joiSchema = Joi[type]();
     schema[rule.name] = joiSchema;
     if (rule.required) { schema[rule.name] = joiSchema.required() }
@@ -24,4 +34,6 @@ export const checkPathProps: Processor = (params, {parameters}) => {
       error: error.details
     };
   }
+
+  return null
 };
