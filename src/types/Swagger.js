@@ -42,6 +42,7 @@ export type SchemaMain = {
   $ref?: string;
   readOnly?: boolean;
   writeOnly?: boolean;
+  nullable?: boolean;
   enum?: Array<string | number | boolean>
 }
 

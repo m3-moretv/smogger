@@ -7,7 +7,7 @@ beforeAll(() => {
 
 test('resolveRef with SlideBadge', () => {
   const model = resolveRef({$ref: '#/components/schemas/SlideBadge'}).properties;
-  expect(model).toHaveProperty('text', { type: 'string', description: 'Текст бейджа', example: 'hit' });
+  expect(model).toHaveProperty('text');
 });
 
 test('getMethodModel', () => {

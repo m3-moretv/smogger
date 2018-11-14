@@ -34,6 +34,4 @@ export const checkPathProps: Processor = (params, {parameters}) => {
       error: error.details
     };
   }
-
-  return null
 };
