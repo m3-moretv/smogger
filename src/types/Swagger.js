@@ -42,6 +42,7 @@ export type SchemaMain = {
   $ref?: string;
   readOnly?: boolean;
   writeOnly?: boolean;
+  enum?: Array<string | number | boolean>
 }
 
 export type Schema = SchemaMain | NumberModificator | StringModificator | ArrayModificator | ObjectModificator;

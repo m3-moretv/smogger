@@ -1,5 +1,6 @@
 import SwaggerParser from "swagger-parser";
 import type { ContentType, HTTPMethod, Method, Schema } from "../../types/Swagger";
+import { objectPath } from "../../utils/utils";
 
 let SPEC = null;
 
@@ -8,7 +9,7 @@ const getSpec = () => {
   return SPEC;
 };
 
-const parseRef = (ref: string) => ref.split('/').slice(1).reduce((acc, part) => acc[part], getSpec());
+const parseRef = (ref: string) => objectPath(getSpec(), ref.slice(2), '/');
 
 export const setSpec = spec => SPEC = spec;
 

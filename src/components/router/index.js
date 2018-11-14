@@ -1,12 +1,13 @@
 import Koa from 'koa';
 import { createRouter } from "./generate";
-import { dataToResponse, formatSwaggerPath } from "../../utils/utils";
+import { formatSwaggerPath } from "../../utils/utils";
 import type { Context, RouteParams } from "../../types/Router";
 import type { Method } from "../../types/Swagger";
 import { getMethodModel } from "../parser";
 
 export type Processor = (params: RouteParams, model: Method, data: any) => any;
 type CreateMiddleware = (router: KoaRouter$Middleware, processors: Array<Processor>) => KoaRouter$Middleware;
+export const dataToResponse: (data: {}, ctx: Context) => string = (data, ctx) => ctx.body = JSON.stringify(data);
 
 export const exposeParams: (ctx: Context) => {params: RouteParams, model: Method} = ctx => {
   const {params, req: {method}, _matchedRoute} = ctx;

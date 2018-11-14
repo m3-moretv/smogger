@@ -281,6 +281,8 @@ components:
           example: '2007-07-16T19:20:30.45+01:00'
         migAge:
           type: integer
+          max: 18
+          min: 1
           example: 18
         checkAge:
           type: boolean
@@ -330,6 +332,8 @@ components:
         slides:
           description: Массив активный слайдов отсортированных по позиции
           type: array
+          minItems: 1
+          maxItems: 1
           items:
             $ref: '#/components/schemas/Slide'
     Slide:
@@ -386,6 +390,7 @@ components:
       properties:
         text:
           type: string
+          format: internet.color
           description: Текст бейджа #todo format ?
           example: 'hit'
         color:

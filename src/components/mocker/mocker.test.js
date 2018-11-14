@@ -3,7 +3,6 @@ import { getMethodModel, setSpec } from "../parser";
 import { mockData } from "./index";
 import { allOf, anyOf, oneOf } from "./combiners";
 
-let randResult = 0.1;
 const COMBINERS = [{
   type: 'object',
   properties: {
@@ -19,9 +18,6 @@ const COMBINERS = [{
 }];
 
 beforeAll(() => {
-  const mockMath = Object.create(global.Math);
-  mockMath.random = () => randResult;
-  global.Math = mockMath;
   return SwaggerParser.parse(`src/components/__mocks__/openapi.yaml`).then(setSpec);
 });
 
@@ -33,22 +29,19 @@ test('oneOf return equals elements', () => {
 });
 
 test('oneOf return random element', () => {
-  randResult = 0.1;
+
   const firstCombiners = oneOf(COMBINERS);
   expect(firstCombiners()).toEqual(COMBINERS[0]);
 
-  randResult = 1;
   const secondCombiners = oneOf(COMBINERS);
   expect(secondCombiners()).toEqual(COMBINERS[1]);
 });
 
 test('anyOf return random element', () => {
-  randResult = 0.1;
   const randCombiners = anyOf(COMBINERS);
 
   expect(randCombiners()).toEqual(COMBINERS[0]);
 
-  randResult = 1;
   expect(randCombiners()).not.toEqual(COMBINERS[0]);
 });
 
