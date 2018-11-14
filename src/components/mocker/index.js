@@ -40,6 +40,15 @@ const mock = (schema: Schema) => {
     return new Array(10).fill().map(() => mock(combiner()));
   }
 
+  if ('oneOf' in schema || 'anyOf' in schema || 'allOf' in schema) {
+    let combiner = () => schema;
+    if ('oneOf' in schema) {combiner = oneOf(schema.oneOf)}
+    if ('anyOf' in schema) {combiner = anyOf(schema.anyOf)}
+    if ('allOf' in schema) {combiner = allOf(schema.allOf)}
+
+    return mock(combiner());
+  }
+
   return createFakeData(schema);
 };
 

@@ -57,7 +57,8 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Slider'
+                    allOf:
+                    - $ref: '#/components/schemas/Slider'
 
   /{platform}/projects/{projectId}:
     get:
@@ -365,10 +366,12 @@ components:
           example: 9.2313
         badge:
           nullable: true
-          $ref: '#/components/schemas/SlideBadge'
+          allOf:
+          - $ref: '#/components/schemas/SlideBadge'
         button:
           nullable: true
-          $ref: '#/components/schemas/SlideButton'
+          allOf:
+          - $ref: '#/components/schemas/SlideButton'
     SlideButton:
       properties:
         text:
