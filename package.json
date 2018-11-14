@@ -1,16 +1,16 @@
 {
   "name": "mogger",
   "version": "1.0.0",
-  "description": "",
+  "description": "Mock server for OpenAPI v3 spec",
   "main": "./lib/index.js",
-  "bin": "./lib/scripts/bin.js",
+  "bin": "./lib/index.js",
   "scripts": {
     "build": "babel src/ -d lib/",
     "build:dev": "babel src/ -d lib/ --watch --source-maps inline",
     "test": "jest",
     "flow:deps": "flow-typed install"
   },
-  "author": "",
+  "author": "https://github.com/MrFranke",
   "license": "ISC",
   "dependencies": {
     "commander": "^2.19.0",

@@ -5,7 +5,7 @@ export type DataFormat = 'float' | 'double' | 'int32' | 'int64' | 'binary' | 'by
 export type HTTPMethod = 'get' | 'post' | 'delete' | 'put' | 'update';
 
 export type ObjectModificator = {
-  requred?: Array<string>;
+  required?: Array<string>;
   additionalProperties?: boolean;
   minProperties: number;
   maxProperties: number;
