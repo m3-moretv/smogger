@@ -34,5 +34,6 @@ export const listen = (paths, { port }) => {
     .use(router.allowedMethods());
 
   app.listen(port);
+  console.log(`Mock server working in :${port}`);
   return app;
 };

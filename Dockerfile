@@ -1,4 +1,6 @@
-FROM node:carbone
+FROM node:10
 WORKDIR /usr/app
-COPY lib lib
-CMD node lib/index.js
+COPY . .
+RUN npm install
+RUN npm run build
+CMD npx .
