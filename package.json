@@ -9,7 +9,8 @@
     "build:prod": "NODE_ENV=production npm run build",
     "build:dev": "NODE_ENV=development npm run build -- --watch",
     "test": "NODE_ENV=test jest",
-    "flow:deps": "flow-typed install"
+    "flow:deps": "flow-typed install",
+    "postinstall": "build:prod"
   },
   "engines" : { "node" : ">=10" },
   "author": "mrfranke",
