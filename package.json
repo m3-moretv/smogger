@@ -1,16 +1,18 @@
 {
-  "name": "mogger",
+  "name": "smogger",
   "version": "1.0.0",
   "description": "Mock server for OpenAPI v3 spec",
   "main": "./lib/index.js",
   "bin": "./lib/index.js",
   "scripts": {
-    "build": "babel src/ -d lib/",
-    "build:dev": "babel src/ -d lib/ --watch --source-maps inline",
-    "test": "jest",
+    "build": "babel src/ -d lib/ --source-maps",
+    "build:prod": "NODE_ENV=production npm run build",
+    "build:dev": "NODE_ENV=development npm run build -- --watch",
+    "test": "NODE_ENV=test jest",
     "flow:deps": "flow-typed install"
   },
-  "author": "https://github.com/MrFranke",
+  "engines" : { "node" : ">=10" },
+  "author": "mrfranke",
   "license": "ISC",
   "dependencies": {
     "commander": "^2.19.0",

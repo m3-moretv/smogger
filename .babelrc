@@ -1,4 +1,19 @@
 {
+  "env": {
+    "test": {},
+    "development": {
+      "ignore": [
+        "**/*.test.js",
+        "**/__mocks__"
+      ]
+    },
+    "production": {
+      "ignore": [
+        "**/*.test.js",
+        "**/__mocks__"
+      ]
+    }
+  },
   "presets": [
     ["@babel/preset-env", {
       "targets": {
