@@ -48,7 +48,6 @@ test('anyOf return random element', () => {
 test('allOf assigned combiners', () => {
   const allCombiners = allOf(COMBINERS);
   const combiner = allCombiners();
-
   expect(combiner).toHaveProperty('id');
   expect(combiner).toHaveProperty('bark')
 });

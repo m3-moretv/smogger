@@ -1,6 +1,6 @@
 import type { Schema } from "../../types/Swagger";
 import { randomElement } from "../../utils/utils";
-import { resolveRef } from "../parser";
+import deepmerge from "deepmerge";
 
 export type Combiner = (combines: Array<Schema>) => () => Schema;
 
@@ -10,5 +10,5 @@ export const oneOf: Combiner = (combines) => {
 };
 export const anyOf: Combiner = (combines) => () => randomElement(combines);
 export const allOf: Combiner = (combines) => () => combines.reduce((acc, schema) => {
-  return Object.assign(acc, resolveRef(schema.properties || schema));
+  return deepmerge(acc, schema.properties || schema);
 }, {});
