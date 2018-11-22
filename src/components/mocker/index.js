@@ -21,7 +21,7 @@ const formatFakerTypes = (type) => {
 const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLength = 0, maxLength = 100, ...rest}) => {
   if ('enum' in rest) { return randomElement(rest.enum); }
   if ('nullable' in rest && random.boolean()) { return null; }
-  if (format === 'date') { return faker.data.between('2015-01-01', '2021-01-01'); }
+  if (format === 'date') { return faker.date.between('2015-01-01', '2021-01-01'); }
 
   const normalizeType = formatFakerTypes(type);
   const ftype = format && format.includes('.') ? objectPath(faker, format) : faker.random[normalizeType];
