@@ -229,71 +229,12 @@ components:
           example: 'ужасы'
     Project:
       properties:
-        id:
-          type: integer
-          description: Идентифиткатор проекта
-          example: 364832
-        hubId:
-          type: string
-          description: Идентификатор проекта в HUB
-          example: '2453245'
-        type:
-          type: string
-          enum: ['MULTIPART_MOVIE', 'MOVIE', 'SERIES']
-          description: Тип проекта (Многосерийный, Полнометражный, Сериал)
-        category:
-          type: string
-          enum: ['SHOW', 'SERIES', 'TV_PROGRAMME', 'MOVIE', 'CARTOON']
-          description: Категория проекта (Шоу, Сериалы, Программы, Фильмы, Мультфильмы)
-        isActive:
-          type: boolean
-          description: Флаг опубликованности проекта
-          example: true
-        title:
-          type: string
-          description: Название проекта
-          example: Ивановы Ивановы
         originTitle:
           type: string
+          format: image
           description: Название проекта на языке оригинала
           example: Ивановы Ивановы
-        brief:
-          type: string
-          description: Краткое описание
-          example: Семейный многосерийный фильм
-        description:
-          type: string
-          description: Полное описание
-          example: Фильм повествует историю одного человека, который благодаря ничему незачем никогда вот так вот
-        genres:
-          type: array
-          description: Список жанров
-          items:
-            $ref: '#/components/schemas/Genre'
-        releaseDate:
-          type: string
-          format: date
-          example: '2007-07-16T19:20:30.45+01:00'
-        closeDate:
-          type: string
-          format: date
-          nullable: true
-          example: '2007-07-16T19:20:30.45+01:00'
-        migAge:
-          type: integer
-          max: 18
-          min: 1
-          example: 18
-        checkAge:
-          type: boolean
-          example: true
-        rating:
-          type: number
-          format: double
-          example: 9.2353
-        provider:
-          allOf:
-          - $ref: '#/components/schemas/Provider'
+
     Provider:
       properties:
         id:
