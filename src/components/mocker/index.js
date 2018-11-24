@@ -61,7 +61,7 @@ const mock = (schema: Schema) => {
     let combiner = () => schema;
     if ('oneOf' in schema) {combiner = oneOf(schema.oneOf)}
     if ('anyOf' in schema) {combiner = anyOf(schema.anyOf)}
-    if ('allOf' in schema) {combiner = allOf(schema.allOf)}
+    if ('allOf' in schema) {combiner = allOf(schema.allOf.properties | schema.allOf)}
 
     return mock(combiner());
   }

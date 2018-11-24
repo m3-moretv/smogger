@@ -10,5 +10,5 @@ export const oneOf: Combiner = (combines) => {
 };
 export const anyOf: Combiner = (combines) => () => randomElement(combines);
 export const allOf: Combiner = (combines) => () => combines.reduce((acc, schema) => {
-  return deepmerge(acc, schema.properties || schema);
+  return deepmerge(acc, schema);
 }, {});
