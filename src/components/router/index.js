@@ -20,9 +20,19 @@ export const exposeParams: (ctx: Context) => {params: RouteParams, model: Method
 };
 
 export const createMiddleware: CreateMiddleware = (router, processors) => router.use((ctx, next) => {
+  let data = {};
   if (!ctx.matched.length) { return next() }
   const {params, model} = exposeParams(ctx);
-  const data = processors.reduce((data, processor) => Object.assign(data, processor(params, model, data)), {});
+  try{
+    data = processors.reduce((data, processor) => Object.assign(data, processor(params, model, data)), {});
+  }catch(e) {
+    ctx.status = 500;
+    data = {
+      error_message: `Smogger catch error: ${e.message}`,
+      error_stack: e.stack
+    };
+    debugger
+  }
   dataToResponse(data, ctx);
 });
 
@@ -34,6 +44,6 @@ export const listen = (paths, { port }) => {
     .use(router.allowedMethods());
 
   app.listen(port);
-  console.log(`Mock server working in :${port}`);
+  console.log(`Mock server working on :${port}`);
   return app;
 };

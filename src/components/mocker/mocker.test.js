@@ -1,7 +1,7 @@
 import SwaggerParser from "swagger-parser";
 import { getMethodModel, setSpec } from "../parser";
 import { mockData } from "./index";
-import { allOf, anyOf, oneOf } from "./combiners";
+import { allOf, anyOf, oneOf } from "../parser/combiners";
 
 const COMBINERS = [{
   type: 'object',
