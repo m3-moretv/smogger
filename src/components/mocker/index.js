@@ -33,7 +33,6 @@ const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLengt
 };
 
 export const mockData: Processor = (params, model) => {
-  throw new Error('ooops');
   return processor(
     getResponse(model),
     createFakeData
