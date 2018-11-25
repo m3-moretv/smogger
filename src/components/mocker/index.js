@@ -3,6 +3,7 @@ import random from 'random';
 import { objectPath, randomElement } from "../../utils/utils";
 import { getResponse, processor } from "../parser";
 import type { Processor } from "../router";
+import type { Schema } from "../../types/Swagger";
 
 const formatFakerTypes = (type) => {
   switch(type) {
@@ -32,9 +33,17 @@ const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLengt
   return ftype(props[normalizeType]);
 };
 
+const generateArrayItems = (schema: Schema) => {
+  const min = schema.minItems || 0;
+  const max = schema.maxItems || 15;
+  const arrayLength = random.int(min, max);
+  return new Array(arrayLength).fill(schema.items);
+};
+
 export const mockData: Processor = (params, model) => {
   return processor(
-    getResponse(model),
-    createFakeData
+    createFakeData,
+    { items: generateArrayItems },
+    getResponse(model)
   );
 };

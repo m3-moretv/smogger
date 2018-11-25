@@ -228,12 +228,12 @@ components:
           description: Языковая метка
           example: 'ужасы'
     Project:
-      properties:
-        originTitle:
-          type: string
-          format: image
-          description: Название проекта на языке оригинала
-          example: Ивановы Ивановы
+      items:
+        properties:
+          originTitle:
+            type: string
+            description: Название проекта на языке оригинала
+            example: Ивановы Ивановы
 
     Provider:
       properties:
