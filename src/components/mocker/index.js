@@ -30,6 +30,9 @@ const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLengt
     number: {minimum, maximum},
     words: random.int(minLength, maxLength)
   };
+  if (normalizeType === 'words') {
+    return ftype(props[normalizeType]).slice(0, maxLength);
+  }
   return ftype(props[normalizeType]);
 };
 
