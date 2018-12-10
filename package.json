@@ -17,6 +17,7 @@
   "author": "mrfranke",
   "license": "ISC",
   "dependencies": {
+    "ballboy": "^1.1.0",
     "commander": "^2.19.0",
     "deepmerge": "^2.2.1",
     "faker": "^4.1.0",
@@ -26,7 +27,8 @@
     "node-fetch": "^2.2.1",
     "random": "^2.0.12",
     "rxjs": "^6.3.3",
-    "swagger-parser": "^6.0.2"
+    "swagger-parser": "^6.0.2",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",

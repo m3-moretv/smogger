@@ -1,16 +1,18 @@
 #!/usr/bin/env node
-import SwaggerParser from "swagger-parser";
+import { ballboy } from "ballboy";
 import { configure } from "./components/configure";
 import { setSpec } from "./components/parser";
 import { createMiddleware, listen } from "./components/router";
 import { checkPathProps } from "./components/validator";
 import { mockData } from "./components/mocker";
+import YAML from 'yamljs';
 
 const config = configure();
 const SPEC_PATH = config.spec;
 const PORT = config.port;
 
-SwaggerParser.parse(SPEC_PATH)
+ballboy(SPEC_PATH)
+  .then(YAML.parse)
   .then(setSpec)
   .then(spec => {
     const router = listen(spec.paths, {port: PORT});
