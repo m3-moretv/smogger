@@ -17,7 +17,7 @@ const formatFakerTypes = (type) => {
   }
 };
 
-const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLength = 0, maxLength = 100, ...rest}) => {
+const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLength = 0, maxLength = 500, ...rest}) => {
   if ('enum' in rest) { return randomElement(rest.enum); }
   if ('nullable' in rest && random.boolean()) { return null; }
   if (format === 'date') { return faker.date.between('2015-01-01', '2021-01-01'); }
@@ -27,7 +27,7 @@ const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLengt
   const ftype = format && format.includes('.') ? objectPath(faker, format) : faker.random[normalizeType];
   if (format && format.includes('.')) {debugger}
   const props = {
-    number: {minimum, maximum},
+    number: {min: minimum, max: maximum},
     words: random.int(minLength, maxLength)
   };
   if (normalizeType === 'words') {
