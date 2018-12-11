@@ -36,11 +36,9 @@ const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLengt
   return ftype(props[normalizeType]);
 };
 
-const generateArrayItems = (schema: Schema) => {
-  const min = schema.minItems || 0;
-  const max = schema.maxItems || 15;
-  const arrayLength = random.int(min, max);
-  return new Array(arrayLength).fill(schema.items);
+const generateArrayItems = ({minItems = 0, maxItems = 15, items}: Schema) => {
+  const arrayLength = random.int(minItems, maxItems);
+  return new Array(arrayLength).fill(items);
 };
 
 export const mockData: Processor = (params, model) => {

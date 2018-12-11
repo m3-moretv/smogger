@@ -1,7 +1,6 @@
 import SwaggerParser from "swagger-parser";
-import { getMethodModel, setSpec } from "../parser";
-import { mockData } from "./index";
-import { allOf, anyOf, oneOf } from "../parser/combiners";
+import { setSpec } from "../parser";
+import { allOf, oneOf } from "../parser/combiners";
 
 const COMBINERS = [{
   type: 'object',
@@ -54,7 +53,7 @@ test('allOf assigned combiners', () => {
   expect(combiner).toHaveProperty('bark')
 });
 
-test('create mock data', () => {
-  const response = getMethodModel('/app/screenGrid/{screenName}', 'get');
-  const data = mockData({}, response);
-});
+// test('create mock data', () => {
+//   const response = getMethodModel('/app/screenGrid/{screenName}', 'get');
+//   const data = mockData({}, response);
+// });
