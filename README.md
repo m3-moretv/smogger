@@ -25,4 +25,4 @@ format: name.firstName
 - Добавить заголовок, который регулирует код ответа сервера (X-Mogger-Code: 200 | 403 | 500 e.t.c)
 - Логи в проект
 
-_Support by MoreTV with ❤️_
+_Supported by MoreTV with ❤️_
