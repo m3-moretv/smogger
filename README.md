@@ -1,12 +1,7 @@
 Простой mock сервер для OpenAPI v3
 # Установка и запуск
-- Клонировать репозиторий
-- Установить зависимости `yarn install`
-- Запустить `node ./lib -s <spec path or url>`
-
-# Docker
-Пример запуска контейнера:
-`docker run --name mogger --rm -it -p 3000:3000 -v ${PWD}/src/components/__mocks__/openapi.yaml:/usr/app/spec.yaml  gitlab.ctcmedia.ru:4567/frontend/mogger`
+- `npm i -g @m3-moretv/smogger`
+- `npx @m3-moretv/smogger -s ./spec.yaml`
 
 # Требования к спецификации OpenAPI
 - Mock сервер умеет работать только со спецификацией 3й версии.
