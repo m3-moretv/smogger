@@ -15,8 +15,8 @@
     "node": ">=10"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/m3-moretv/smogger"
+    "type": "git",
+    "url": "https://github.com/m3-moretv/smogger"
   },
   "homepage": "https://github.com/m3-moretv/smogger",
   "author": "mrfranke",
@@ -43,7 +43,7 @@
     "@types/jest": "^23.3.9",
     "babel-core": "^7.0.0-bridge",
     "babel-jest": "^23.6.0",
-    "flow-bin": "^0.85.0",
+    "flow-bin": "^0.90.0",
     "flow-typed": "^2.5.1",
     "jest": "^23.6.0"
   }
