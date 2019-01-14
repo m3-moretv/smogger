@@ -293,6 +293,7 @@ components:
           example: 'Описание на слайде'
         image:
           type: string
+          format: image
           description: Ссылка на изображение для фона слайда
           example: 'https://images.more.tv/940928304/20938402.jpg'
         link:

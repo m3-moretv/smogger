@@ -1,8 +1,9 @@
 export type ParameterIn = 'query' | 'body' | 'path';
 export type ContentType = 'application/json' | 'application/xml' | 'text/plain';
 export type DataTypes = 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object';
-export type DataFormat = 'float' | 'double' | 'int32' | 'int64' | 'binary' | 'byte';
+export type DataFormat = 'float' | 'double' | 'int32' | 'int64' | 'binary' | 'byte' |  'date' | 'image';
 export type HTTPMethod = 'get' | 'post' | 'delete' | 'put' | 'update';
+export type RefString = string;
 
 export type ObjectModificator = {
   required?: Array<string>;
@@ -39,14 +40,17 @@ export type StringModificator = {
 export type SchemaMain = {
   type: DataTypes;
   format?: DataFormat;
-  $ref?: string;
+  $ref?: RefString;
   readOnly?: boolean;
   writeOnly?: boolean;
   nullable?: boolean;
+  oneOf?: Array<RefString>;
+  allOf?: Array<RefString>;
+  anyOf?: Array<RefString>;
   enum?: Array<string | number | boolean>
 }
 
-export type Schema = SchemaMain | NumberModificator | StringModificator | ArrayModificator | ObjectModificator;
+export type Schema = SchemaMain & NumberModificator & StringModificator & ArrayModificator & ObjectModificator;
 
 export type Parameter = {
   description?: string;

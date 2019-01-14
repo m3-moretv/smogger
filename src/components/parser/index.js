@@ -1,8 +1,8 @@
-import type { ArrayModificator, ContentType, HTTPMethod, Method, Schema, SchemaMain } from "../../types/Swagger";
+import type { ContentType, Method, Schema } from "../../types/Swagger";
 import { entries, objectPath } from "../../utils/utils";
 import { allOf, anyOf, oneOf } from "./combiners";
 
-export type MutatorItems = (schema: SchemaMain & ArrayModificator) => Array<any>;
+export type MutatorItems = (schema: Schema) => Array<any>;
 export type Mutators = {
   items?: MutatorItems
 };
@@ -14,16 +14,18 @@ const getSpec = () => {
   return SPEC;
 };
 
-const parseRef = (ref: string) => objectPath(getSpec(), ref.slice(2), '/');
+// $FlowFixMe
+const parseRef = (ref: string): Schema => objectPath(getSpec(), ref.slice(2), '/');
 
-export const setSpec = spec => SPEC = spec;
+export const setSpec = (spec: Schema) => SPEC = spec;
 
-export const getMethodModel: (path: string, method: HTTPMethod) => Method = (path, method) => {
-  return getSpec().paths[path][method.toLowerCase()];
-};
+export const getMethodModel: (path: string, method: string) => Method =
+  (path, method) =>
+    // $FlowFixMe
+    getSpec().paths[path][method.toLowerCase()];
 
 export const resolveRef = (schema: Schema) => {
-  if ('$ref' in schema) { return parseRef(schema.$ref); }
+  if (schema.$ref) { return parseRef(schema.$ref); }
   return schema;
 };
 
@@ -40,25 +42,25 @@ export const processor: (cb: (data: Schema) => any, mutators: Mutators, schema: 
     return next(resolveRef(schema));
   }
 
-  if ('properties' in schema) {
+  if (schema.properties) {
     return entries(schema.properties).reduce((result, [key, property]) => {
       result[key] = next(property);
       return result;
     }, {});
   }
 
-  if ('items' in schema) {
-    if (mutators['items']) {
-      return mutators['items'](schema).map(item => next(item));
+  if (schema.items) {
+    if (mutators.items) {
+      return mutators.items(schema).map(item => next(item));
     }
     return next(schema.items);
   }
 
   if ('oneOf' in schema || 'anyOf' in schema || 'allOf' in schema) {
     let combiner = () => schema;
-    if ('oneOf' in schema) {combiner = oneOf(schema.oneOf)}
-    if ('anyOf' in schema) {combiner = anyOf(schema.anyOf)}
-    if ('allOf' in schema) {combiner = allOf(schema.allOf.map(resolveRef))}
+    if (schema.oneOf) {combiner = oneOf(schema.oneOf)}
+    if (schema.anyOf) {combiner = anyOf(schema.anyOf)}
+    if (schema.allOf) {combiner = allOf(schema.allOf.map(parseRef))}
 
     return next(combiner());
   }

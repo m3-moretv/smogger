@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import { normalizer, entries, run, spreadToArgs, formatRouterPath } from "../../utils/utils";
-import type { Paths } from "../../types/Swagger";
+import type { HTTPMethod, Paths } from "../../types/Swagger";
 
 const log = ([path, methods]) => {
   console.log(`Create path ${path}`);
@@ -18,14 +18,31 @@ const defaultResponse = (ctx, next) => {
   next();
 };
 
-const createMethod =
-  router => // save router
-    path => // save path
-      (type, {operationId}) => // bind method to router with saved path
-        router[type].bind(router, setRouteName(operationId), path, defaultResponse);
+const getRouterMethod = (router: Router) => (type: HTTPMethod) => {
+  switch (type) {
+    case 'get':
+      return router.get;
+    case 'post':
+      return router.post;
+    case 'delete':
+      return router.delete;
+    case 'put':
+      return router.put;
+    case 'update':
+      return router.post;
+    default:
+      return router.get;
+  }
+};
 
-export const createRouter = (paths: Paths, config = {}) => {
-  const router = new Router(config);
+const createMethod =
+  (router: Router) => // save router
+    path => // save path
+      (type: HTTPMethod, {operationId}) => // bind method to router with saved path
+        getRouterMethod(router)(type).bind(router, setRouteName(operationId), path, defaultResponse);
+
+export const createRouter = (paths: Paths) => {
+  const router = new Router();
   const createMethodWithRouter = createMethod(router);
 
   entries(paths)

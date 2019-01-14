@@ -5,13 +5,17 @@ import { getResponse, processor } from "../parser";
 import type { Processor } from "../router";
 import type { Schema } from "../../types/Swagger";
 
-const createEnum = (enumElements: Array<string>) => randomElement(enumElements);
-const createDate = () => faker.date.between('2015-01-01', '2021-01-01');
+type Config = {
+  imageProvider: string;
+}
+
+const createEnum = (enumElements: Array<string | number | boolean>) => randomElement(enumElements);
+const createDate = () => faker.date.between(new Date('2015-01-01'), new Date('2021-01-01'));
 const createBoolean = () => random.boolean();
-const createImageLink = () => 'https://picsum.photos/200/300/?random';
-const createNumber = (min: number = 0, max: number = 99999999, isFloat: boolean) => {
+const createImageLink = (provider: string) => provider.replace('<width>', '200').replace('<height>', '300');
+const createNumber = (min: number = 0, max: number = 9999999) => {
   const options = {min, max};
-  return isFloat ? faker.random.float(options) : faker.random.number(options);
+  return faker.random.number(options);
 };
 const createString = (format: string = 'words') => (min: number, max: number) => {
   const wordsCount: number = random.int(min, max);
@@ -19,18 +23,26 @@ const createString = (format: string = 'words') => (min: number, max: number) =>
   return words.slice(0, max);
 };
 
-const isFloat = (format) => (format === 'float' || format === 'double');
-const isNumber = (type) => (type === 'number' || type === 'integer');
+const isNumber = (type: string): boolean => (type === 'number' || type === 'integer');
 
-const createFakeData = ({type, format, minimum = 0, maximum = 99999999, minLength = 0, maxLength = 500, ...rest}) => {
-  if ('enum' in rest) { return createEnum(rest.enum); }
+const createFakeData = ({imageProvider}: Config) =>
+  ({
+     type,
+     format,
+     minimum = 0,
+     maximum = 99999999,
+     minLength = 0,
+     maxLength = 500,
+     ...rest
+  }: Schema) => {
+  if (rest.enum) { return createEnum(rest.enum); }
   if ('nullable' in rest && random.boolean()) { return null; }
 
   if (format === 'date') { return createDate(); }
-  if (format === 'image') { return createImageLink(); }
+  if (format === 'image') { return createImageLink(imageProvider); }
 
   if (type === 'string') { return createString(format)(minLength, maxLength); }
-  if (isNumber(type)) { return createNumber(minimum, maximum, isFloat(format)); }
+  if (isNumber(type)) { return createNumber(minimum, maximum); }
   if (type === 'boolean') { return createBoolean(); }
 };
 
@@ -39,9 +51,11 @@ const generateArrayItems = ({minItems = 0, maxItems = 15, items}: Schema) => {
   return new Array(arrayLength).fill(items);
 };
 
-export const mockData: Processor = (params, model) => {
+export const mockData: (cfg: Config) => Processor = ({imageProvider}) => (params, model) => {
   return processor(
-    createFakeData,
+    createFakeData({
+      imageProvider
+    }),
     { items: generateArrayItems },
     getResponse(model)
   );
