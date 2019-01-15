@@ -34,6 +34,7 @@ export const createMiddleware: CreateMiddleware = (router, processors) => router
       error_message: `Smogger catch error: ${e.message}`,
       error_stack: e.stack
     };
+    throw e;
   }
   dataToResponse(data, ctx);
 });

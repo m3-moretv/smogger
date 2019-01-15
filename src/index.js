@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import 'source-map-support/register'
+
 import { ballboy } from "ballboy";
 import { configure } from "./components/configure";
 import { setSpec } from "./components/parser";
