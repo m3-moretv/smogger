@@ -1,6 +1,6 @@
 import faker from 'faker';
 import random from 'random';
-import { randomElement } from "../../utils/utils";
+import { objectPath, randomElement } from "../../utils/utils";
 import { getResponse, processor } from "../parser";
 import type { Processor } from "../router";
 import type { Schema } from "../../types/Swagger";
@@ -8,6 +8,8 @@ import type { Schema } from "../../types/Swagger";
 type Config = {
   imageProvider: string;
 }
+
+const getFakerMethod = (path: string) => objectPath(faker, path);
 
 const createEnum = (enumElements: Array<string | number | boolean>) => randomElement(enumElements);
 const createDate = () => faker.date.between(new Date('2015-01-01'), new Date('2021-01-01'));
@@ -17,9 +19,10 @@ const createNumber = (min: number = 0, max: number = 9999999) => {
   const options = {min, max};
   return faker.random.number(options);
 };
-const createString = (format: string = 'words') => (min: number, max: number) => {
+const createString = (format: string = 'random.words') => (min: number, max: number) => {
   const wordsCount: number = random.int(min, max);
-  const words = faker.random[format](wordsCount);
+  const fakerMethod = getFakerMethod(format);
+  const words = fakerMethod(wordsCount);
   return words.slice(0, max);
 };
 

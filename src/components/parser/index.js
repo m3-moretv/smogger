@@ -60,7 +60,7 @@ export const processor: (cb: (data: Schema) => any, mutators: Mutators, schema: 
     let combiner = () => schema;
     if (schema.oneOf) {combiner = oneOf(schema.oneOf)}
     if (schema.anyOf) {combiner = anyOf(schema.anyOf)}
-    if (schema.allOf) {combiner = allOf(schema.allOf.map(parseRef))}
+    if (schema.allOf) {combiner = allOf(schema.allOf.map(resolveRef))}
 
     return next(combiner());
   }
