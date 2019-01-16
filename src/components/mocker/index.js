@@ -1,6 +1,6 @@
 import faker from 'faker';
 import random from 'random';
-import { objectPath, randomElement } from "../../utils/utils";
+import { objectPath, randomElement } from "../utils";
 import { getResponseModel, processor } from "../parser";
 import type { Schema } from "openapi3-flowtype-definition";
 

@@ -1,6 +1,6 @@
 import Koa from 'koa';
 import { createRouter } from "./generate";
-import { compose, formatSwaggerPath } from "../../utils/utils";
+import { compose, formatSwaggerPath } from "../utils";
 import type Application, {Context} from 'koa';
 import type { PathItem } from "openapi3-flowtype-definition";
 

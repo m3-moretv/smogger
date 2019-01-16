@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import { normalizer, entries, run, spreadToArgs, formatRouterPath } from "../../utils/utils";
+import { normalizer, entries, run, spreadToArgs, formatRouterPath } from "../utils";
 import type { PathItem, Paths } from "openapi3-flowtype-definition";
 
 const log = ([path, methods]) => {

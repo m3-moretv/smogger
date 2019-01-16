@@ -1,4 +1,4 @@
-import { randomElement } from "../../utils/utils";
+import { randomElement } from "../utils";
 import deepmerge from "deepmerge";
 import type { Schema } from "openapi3-flowtype-definition";
 

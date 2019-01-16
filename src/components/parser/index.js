@@ -1,4 +1,4 @@
-import { entries } from "../../utils/utils";
+import { entries } from "../utils";
 import { allOf, anyOf, oneOf } from "./combiners";
 import type { OpenAPI, Operation, Paths, Schema } from 'openapi3-flowtype-definition'
 
