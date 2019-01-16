@@ -17,6 +17,7 @@
     }
   },
   "lint-staged": {
+    "*.js": ["flow check"],
     "*.{js,json,css,md}": ["prettier --write", "git add"]
   },
   "engines": {
