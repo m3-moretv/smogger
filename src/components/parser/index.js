@@ -1,21 +1,34 @@
-import { entries } from "../utils";
-import { allOf, anyOf, oneOf } from "./combiners";
-import type { OpenAPI, Operation, Paths, Schema } from 'openapi3-flowtype-definition'
+import { entries } from '../utils';
+import { allOf, anyOf, oneOf } from './combiners';
+import type {
+  OpenAPI,
+  Operation,
+  Paths,
+  Schema
+} from 'openapi3-flowtype-definition';
 
 export type MutatorItems = (schema: Schema) => Array<any>;
 export type Mutators = {
   items?: MutatorItems
 };
 
+export const getMethodModel: (
+  spec: OpenAPI
+) => (path: string, method: string) => Operation = spec => (path, method) =>
+  spec.paths[path][method.toLowerCase()];
 
-export const getMethodModel: (spec: OpenAPI) => (path: string, method: string) => Operation =
-  spec => (path, method) => spec.paths[path][method.toLowerCase()];
+export const getResponseModel: (
+  method: Operation,
+  status?: number,
+  contentType?: string
+) => Schema = (method, status = 200, contentType = 'application/json') =>
+  method.responses[status].content[contentType].schema;
 
-export const getResponseModel: (method: Operation, status?: number, contentType?: string) => Schema
-  = (method, status = 200, contentType = 'application/json') => method.responses[status].content[contentType].schema;
-
-export const processor: (cb: (data: Schema) => any, mutators: Mutators, schema: Schema) => any
-  = (cb, mutators, schema) => {
+export const processor: (
+  cb: (data: Schema) => any,
+  mutators: Mutators,
+  schema: Schema
+) => any = (cb, mutators, schema) => {
   const next = processor.bind(this, cb, mutators);
 
   if (schema.properties) {
@@ -34,9 +47,15 @@ export const processor: (cb: (data: Schema) => any, mutators: Mutators, schema: 
 
   if ('oneOf' in schema || 'anyOf' in schema || 'allOf' in schema) {
     let combiner = () => schema;
-    if (schema.oneOf) {combiner = oneOf(schema.oneOf)}
-    if (schema.anyOf) {combiner = anyOf(schema.anyOf)}
-    if (schema.allOf) {combiner = allOf(schema.allOf)}
+    if (schema.oneOf) {
+      combiner = oneOf(schema.oneOf);
+    }
+    if (schema.anyOf) {
+      combiner = anyOf(schema.anyOf);
+    }
+    if (schema.allOf) {
+      combiner = allOf(schema.allOf);
+    }
 
     return next(combiner());
   }

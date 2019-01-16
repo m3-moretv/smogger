@@ -11,6 +11,14 @@
     "test": "NODE_ENV=test jest",
     "flow:deps": "flow-typed install"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": ["prettier --write", "git add"]
+  },
   "engines": {
     "node": ">=10"
   },
