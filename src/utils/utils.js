@@ -7,5 +7,10 @@ export const spreadToArgs: (cb: Function) => (obj: {} | Array<any>) => any = cb 
 export const normalizeUrlParams = (subst: RegExp, brackets?: string = ':$1') => (path: string) => path.replace(subst, brackets);
 export const formatSwaggerPath: (path: string) => string = normalizeUrlParams(/:(\w+)/g, '{$1}');
 export const formatRouterPath: (path: string) => string = normalizeUrlParams(/{(\w+)}/g, ':$1');
-export const objectPath: (object: {}, path: string, separator?: string) => any = (object, path, separator = '.') => path.split(separator).reduce((acc, part) => acc[part], object);
-export const randomElement: (arr: Array<any>) => any = (arr) => arr[random.int(0, arr.length-1)];
+export const objectPath: (object: {}, path: string) => any = (object, path) => path.split('.').reduce((acc, part) => acc[part], object);
+export const randomElement: (arr: Array<any>) => any = arr => arr[random.int(0, arr.length-1)];
+export const refToObjectPath: (ref: string) => string = ref => ref.slice(2).replace('/', '.');
+export const compose = (...fns: any) => fns.reduce((f, g) => (...xs) => {
+  const r = g(...xs);
+  return Array.isArray(r) ? f(...r) : f(r);
+});

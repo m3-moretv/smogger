@@ -1,50 +1,41 @@
 import Koa from 'koa';
 import { createRouter } from "./generate";
-import { formatSwaggerPath } from "../../utils/utils";
-import { getMethodModel } from "../parser";
-
-import type { RouteParams } from "../../types/Router";
-import type { Method, Paths } from "../../types/Swagger";
+import { compose, formatSwaggerPath } from "../../utils/utils";
 import type Application, {Context} from 'koa';
+import type { PathItem } from "openapi3-flowtype-definition";
 
-export type Processor = (params: RouteParams, model: Method, data: any) => any;
-export const dataToResponse: (data: {}, ctx: Context) => string = (data, ctx) => ctx.body = JSON.stringify(data);
-type CreateMiddleware = (router: Application, processors: Array<Processor>) => Application;
-type ExposeParams = (ctx: Context) => {params: RouteParams, model: Method};
-export const exposeParams: ExposeParams = ctx => {
-  const {params, req: {method}, _matchedRoute} = ctx;
+export type Middleware = (path: string, method: string, data?: any) => any;
+
+const dataToResponse: (data: {}, ctx: Context) => string = (data, ctx) => ctx.body = JSON.stringify(data);
+type CreateMiddleware = (router: Application, processors: Array<Middleware>) => Application;
+
+const exposeRequestProps: (ctx: Context) => {path: string, method: string} = ctx => {
+  const {req: {method}, _matchedRoute} = ctx;
   const path = formatSwaggerPath(_matchedRoute);
-  const model = getMethodModel(path, method);
   return {
-    params,
-    model
+    path,
+    method
   };
 };
 
 
-export const createMiddleware: CreateMiddleware = (router, processors) => router.use((ctx, next) => {
+export const createMiddleware: CreateMiddleware = (app: Application, middlewares: Middleware[]) => app.use((ctx, next) => {
   let data = {};
   if (!ctx.matched.length) { return next() }
-  const {params, model} = exposeParams(ctx);
-  try{
-    data = processors.reduce((data, processor) => Object.assign(data, processor(params, model, data)), {});
-  }catch(e) {
-    ctx.status = 500;
-    data = {
-      error_message: `Smogger catch error: ${e.message}`,
-      error_stack: e.stack
-    };
-    throw e;
-  }
+  const {path, method} = exposeRequestProps(ctx);
+  const processor = compose(...middlewares);
+  data = processor(path, method, data);
   dataToResponse(data, ctx);
 });
 
-export const listen = (paths: Paths, { port }: {port: number}): Application => {
+export const createHTTPServer = ({ port }: {port: number}, middlewares: Middleware[]) => (paths: PathItem): Application => {
   const app = new Koa();
   const router = createRouter(paths);
   app
     .use(router.routes())
     .use(router.allowedMethods());
+
+  createMiddleware(app, middlewares);
 
   app.listen(port);
   console.log(`Mock server working on :${port}`);

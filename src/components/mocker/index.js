@@ -1,9 +1,8 @@
 import faker from 'faker';
 import random from 'random';
 import { objectPath, randomElement } from "../../utils/utils";
-import { getResponse, processor } from "../parser";
-import type { Processor } from "../router";
-import type { Schema } from "../../types/Swagger";
+import { getResponseModel, processor } from "../parser";
+import type { Schema } from "openapi3-flowtype-definition";
 
 type Config = {
   imageProvider: string;
@@ -54,12 +53,10 @@ const generateArrayItems = ({minItems = 0, maxItems = 15, items}: Schema) => {
   return new Array(arrayLength).fill(items);
 };
 
-export const mockData: (cfg: Config) => Processor = ({imageProvider}) => (params, model) => {
+export const mockData: (cfg: Config) => (model: Schema) => any = ({imageProvider}) => (model) => {
   return processor(
-    createFakeData({
-      imageProvider
-    }),
+    createFakeData({imageProvider}),
     { items: generateArrayItems },
-    getResponse(model)
+    getResponseModel(model)
   );
 };
