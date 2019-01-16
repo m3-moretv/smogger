@@ -1,7 +1,6 @@
-import type { ContentType, Method } from "../../types/Swagger";
 import { entries } from "../../utils/utils";
 import { allOf, anyOf, oneOf } from "./combiners";
-import type { OpenAPI, Paths, Schema } from 'openapi3-flowtype-definition'
+import type { OpenAPI, Operation, Paths, Schema } from 'openapi3-flowtype-definition'
 
 export type MutatorItems = (schema: Schema) => Array<any>;
 export type Mutators = {
@@ -9,10 +8,10 @@ export type Mutators = {
 };
 
 
-export const getMethodModel: (spec: OpenAPI) => (path: string, method: string) => Method =
+export const getMethodModel: (spec: OpenAPI) => (path: string, method: string) => Operation =
   spec => (path, method) => spec.paths[path][method.toLowerCase()];
 
-export const getResponseModel: (method: Method, status?: number, contentType?: ContentType) => Schema
+export const getResponseModel: (method: Operation, status?: number, contentType?: string) => Schema
   = (method, status = 200, contentType = 'application/json') => method.responses[status].content[contentType].schema;
 
 export const processor: (cb: (data: Schema) => any, mutators: Mutators, schema: Schema) => any

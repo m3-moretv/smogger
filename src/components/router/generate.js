@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import { normalizer, entries, run, spreadToArgs, formatRouterPath } from "../../utils/utils";
-import type { HTTPMethod, Paths } from "../../types/Swagger";
+import type { PathItem, Paths } from "openapi3-flowtype-definition";
 
 const log = ([path, methods]) => {
   console.log(`Create path ${path}`);
@@ -18,7 +18,7 @@ const defaultResponse = (ctx, next) => {
   next();
 };
 
-const getRouterMethod = (router: Router) => (type: HTTPMethod) => {
+const getRouterMethod = (router: Router) => (type: string) => {
   switch (type) {
     case 'get':
       return router.get;
@@ -38,7 +38,7 @@ const getRouterMethod = (router: Router) => (type: HTTPMethod) => {
 const createMethod =
   (router: Router) => // save router
     path => // save path
-      (type: HTTPMethod, {operationId}) => // bind method to router with saved path
+      (type: string, {operationId}) => // bind method to router with saved path
         getRouterMethod(router)(type).bind(router, setRouteName(operationId), path, defaultResponse);
 
 export const createRouter = (paths: Paths) => {
