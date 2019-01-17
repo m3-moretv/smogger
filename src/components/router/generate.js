@@ -1,6 +1,12 @@
 import Router from 'koa-router';
-import { normalizer, entries, run, spreadToArgs, formatRouterPath } from "../utils";
-import type { PathItem, Paths } from "openapi3-flowtype-definition";
+import {
+  normalizer,
+  entries,
+  run,
+  spreadToArgs,
+  formatRouterPath
+} from '../utils';
+import type { PathItem, Paths } from 'openapi3-flowtype-definition';
 
 const log = ([path, methods]) => {
   console.log(`Create path ${path}`);
@@ -35,11 +41,20 @@ const getRouterMethod = (router: Router) => (type: string) => {
   }
 };
 
-const createMethod =
-  (router: Router) => // save router
-    path => // save path
-      (type: string, {operationId}) => // bind method to router with saved path
-        getRouterMethod(router)(type).bind(router, setRouteName(operationId), path, defaultResponse);
+const createMethod = (
+  router: Router // save router
+) => (
+  path // save path
+) => (
+  type: string,
+  { operationId } // bind method to router with saved path
+) =>
+  getRouterMethod(router)(type).bind(
+    router,
+    setRouteName(operationId),
+    path,
+    defaultResponse
+  );
 
 export const createRouter = (paths: Paths) => {
   const router = new Router();
@@ -51,8 +66,10 @@ export const createRouter = (paths: Paths) => {
     .map(([path, methods]) => [createMethodWithRouter(path), entries(methods)]) // Создаем функцию для привязки метода к пути и получаем [methodName, methodParams]
     .reduce(
       normalizer(
-        ([bindMethodToRouter, methods]) => methods.map(spreadToArgs(bindMethodToRouter)) // bindMethodToRouter <- methodProps, возвращаем функцию привязки метода со всеми пропсами
-      ), []
+        ([bindMethodToRouter, methods]) =>
+          methods.map(spreadToArgs(bindMethodToRouter)) // bindMethodToRouter <- methodProps, возвращаем функцию привязки метода со всеми пропсами
+      ),
+      []
     )
     .forEach(run); // Привязываем каждый метод к роутеру
 
