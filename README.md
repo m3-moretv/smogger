@@ -50,7 +50,7 @@ required:
 
 Полный список форматов можно найти [тут](https://rawgit.com/Marak/faker.js/master/examples/browser/index.html).
 
-### Ограничения
+### Лимиты
 Так же поддерживаются все ограничения Open API спецификации:
 - minLength
 - maxLength
@@ -69,6 +69,14 @@ maximum: 18
 или использовать [enum](https://swagger.io/docs/specification/data-models/enums/)
 
 Чуть больше о типах и их ограничениях можно прочитать в спеке [Open API](https://swagger.io/docs/specification/data-models/data-types/)
+
+## Изображения
+Smogger умеет генерить ссылки на рандомные изображения, используя какой либо
+из открытых сервисов рандомных картинок (по дефолту https://picsum.photos).
+
+Сервис можно заменить через конфиг, передав в параметре `-i` ссылку сервис.
+Если сервис поддерживает указание в url раземеры картинок можно
+указать это в формате `https://picsum.photos/<width>/<height>/?random`.
 
 ## ATTENTION
 Сейчас генерятся только ответы application/json с кодом 200. В дальнейшем 
