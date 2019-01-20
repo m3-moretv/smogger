@@ -17,9 +17,6 @@ const cfg = {
 };
 const mocker = mockData(cfg);
 
-function test (a: number) {return a+1;}
-test('rr');
-
 SwaggerParser.dereference(SPEC_PATH).then((spec: OpenAPI) => {
   const getMethod = getMethodModel(spec);
   const router = createHTTPServer({ port: PORT }, [

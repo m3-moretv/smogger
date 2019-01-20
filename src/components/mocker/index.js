@@ -1,8 +1,8 @@
-import faker from 'faker';
-import random from 'random';
-import { objectPath, randomElement } from '../utils';
-import { getResponseModel, processor } from '../parser';
-import type { Schema } from 'openapi3-flowtype-definition';
+import faker from "faker";
+import random from "random";
+import { objectPath, randomElement } from "../utils";
+import { getResponseModel, processor } from "../parser";
+import type { Schema } from "openapi3-flowtype-definition";
 
 type Config = {
   imageProvider: string
@@ -13,15 +13,21 @@ const getFakerMethod = (path: string) => objectPath(faker, path);
 const createEnum = (enumElements: Array<string | number | boolean>) =>
   randomElement(enumElements);
 const createDate = () =>
-  faker.date.between(new Date('2015-01-01'), new Date('2021-01-01'));
+  faker.date.between(new Date("2015-01-01"), new Date("2021-01-01"));
 const createBoolean = () => random.boolean();
-const createImageLink = (provider: string) =>
-  provider.replace('<width>', '200').replace('<height>', '300');
+const createImageLink = (
+  provider: string,
+  width?: number = 200,
+  height?: number = 300
+) =>
+  provider
+    .replace("<width>", String(width))
+    .replace("<height>", String(height));
 const createNumber = (min: number = 0, max: number = 9999999) => {
   const options = { min, max };
   return faker.random.number(options);
 };
-const createString = (format: string = 'random.words') => (
+const createString = (format: string = "random.words") => (
   min: number,
   max: number
 ) => {
@@ -32,7 +38,13 @@ const createString = (format: string = 'random.words') => (
 };
 
 const isNumber = (type: string): boolean =>
-  type === 'number' || type === 'integer';
+  type === "number" || type === "integer";
+
+const extractImageSize = (format: string): number[] =>
+  format
+    .replace(/^image\[(\d+x\d+)\]/g, "$1")
+    .split("x")
+    .map(Number);
 
 const createFakeData = ({ imageProvider }: Config) => ({
   type,
@@ -46,24 +58,29 @@ const createFakeData = ({ imageProvider }: Config) => ({
   if (rest.enum) {
     return createEnum(rest.enum);
   }
-  if ('nullable' in rest && random.boolean()) {
+  if ("nullable" in rest && random.boolean()) {
     return null;
   }
 
-  if (format === 'date') {
+  if (format === "date") {
     return createDate();
   }
-  if (format === 'image') {
+  if (/^image\[\d+x\d+\]/.test(format)) {
+    const [width, height] = extractImageSize(format);
+    return createImageLink(imageProvider, width, height);
+  }
+
+  if (/^image/.test(format)) {
     return createImageLink(imageProvider);
   }
 
-  if (type === 'string') {
+  if (type === "string") {
     return createString(format)(minLength, maxLength);
   }
   if (isNumber(type)) {
     return createNumber(minimum, maximum);
   }
-  if (type === 'boolean') {
+  if (type === "boolean") {
     return createBoolean();
   }
 };
