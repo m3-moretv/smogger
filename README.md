@@ -21,16 +21,16 @@ type: object
 required:
     - id
     - name
-  properties:
-    id:
-      type: integer
-      format: int64
-    name:
-      type: string
-      format: name.firstName
-    tag:
-      type: string
-      format: random.word
+properties:
+  id:
+    type: integer
+    format: int64
+  name:
+    type: string
+    format: name.firstName
+  tag:
+    type: string
+    format: random.word
 ```
 **Вернет такие данные:**
 ```json
