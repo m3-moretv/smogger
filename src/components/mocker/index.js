@@ -90,7 +90,7 @@ const generateArrayItems = ({ minItems = 0, maxItems = 15, items }: Schema) => {
   return new Array(arrayLength).fill(items);
 };
 
-export const mockData: (cfg: Config) => (model: Schema) => any = ({
+export const createMockGenerator: (cfg: Config) => (model: Schema) => any = ({
   imageProvider
 }) => model => {
   return processor(
