@@ -18,11 +18,11 @@ const cfg = {
 const mocker = mockData(cfg);
 
 SwaggerParser.dereference(SPEC_PATH).then((spec: OpenAPI) => {
-  const getMethod = getMethodModel(spec);
+  const getModelForMethod = getMethodModel(spec);
   const router = createHTTPServer({ port: PORT }, [
     compose(
       mocker,
-      getMethod
+      getModelForMethod
     )
   ]);
   router(spec.paths);
