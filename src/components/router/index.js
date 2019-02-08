@@ -9,8 +9,8 @@ import { getFromCache, setToCache } from "../cache";
 
 export type Middleware = (path: string, method: string, data?: any) => any;
 
-const dataToResponse: (data: {}, ctx: Context) => string = (data, ctx) =>
-  (ctx.body = JSON.stringify(data));
+const dataToResponse: (data: string, ctx: Context) => string = (data, ctx) =>
+  (ctx.body = data);
 
 type CreateProccesingMiddleware = (
   router: Application,
@@ -34,15 +34,38 @@ const exposeRequestProps: (
   };
 };
 
-export const createCacheMiddleware: CreateCacheMiddleware = (
-  app: Application
-) =>
+export const createRouteMiddleware = (app: Application, paths: PathItem) => {
+  const router = createRouter(paths);
+
+  app.use(router.routes()).use(router.allowedMethods());
+};
+
+export const createRequestStateMiddleware = (app: Application) =>
   app.use((ctx, next) => {
     if (!ctx.matched.length) {
       return next();
     }
 
     const { path, method } = exposeRequestProps(ctx);
+
+    ctx.state = {
+      ...ctx.state,
+      path,
+      method
+    };
+
+    next();
+  });
+
+export const createCacheMiddleware: CreateCacheMiddleware = (
+  app: Application
+) =>
+  app.use((ctx, next) => {
+    const { path, method } = ctx.state;
+
+    if (!path && !method) {
+      return next();
+    }
 
     const cachedData = getFromCache(path, method);
 
@@ -58,20 +81,20 @@ export const createProcessingMiddleware: CreateProccesingMiddleware = (
   middlewares: Middleware[]
 ) =>
   app.use((ctx, next) => {
-    let data = {};
+    const { path, method } = ctx.state;
 
-    if (!ctx.matched.length) {
+    if (!path && !method) {
       return next();
     }
 
-    const { path, method } = exposeRequestProps(ctx);
-
     const processor = compose(...middlewares);
-    data = processor(path, method, data);
+    const data = processor(path, method);
 
-    setToCache(path, method, data);
+    const dataAsString = JSON.stringify(data);
 
-    dataToResponse(data, ctx);
+    setToCache(path, method, dataAsString);
+
+    dataToResponse(dataAsString, ctx);
   });
 
 export const createHTTPServer = (
@@ -80,10 +103,8 @@ export const createHTTPServer = (
 ) => (paths: PathItem): Application => {
   const app = new Koa();
 
-  const router = createRouter(paths);
-
-  app.use(router.routes()).use(router.allowedMethods());
-
+  createRouteMiddleware(app, paths);
+  createRequestStateMiddleware(app);
   createCacheMiddleware(app);
   createProcessingMiddleware(app, middlewares);
 
