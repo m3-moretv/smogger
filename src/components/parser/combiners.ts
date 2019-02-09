@@ -1,6 +1,6 @@
 import { randomElement } from '../utils';
 import deepmerge from 'deepmerge';
-import type { Schema } from 'openapi3-flowtype-definition';
+import { Schema } from "swagger-schema-official";
 
 export type Combiner = (combines: Array<string>) => () => string;
 type CombinerResolved = (combines: Array<Schema>) => () => Schema;

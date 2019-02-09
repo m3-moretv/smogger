@@ -1,19 +1,13 @@
 import { entries } from '../utils';
 import { allOf, anyOf, oneOf } from './combiners';
-import type {
-  OpenAPI,
-  Operation,
-  Paths,
-  Schema
-} from 'openapi3-flowtype-definition';
-
+import { Schema, Operation, Spec } from "swagger-schema-official";
 export type MutatorItems = (schema: Schema) => Array<any>;
 export type Mutators = {
   items?: MutatorItems
 };
 
 export const getMethodModel: (
-  spec: OpenAPI
+  spec: Spec
 ) => (path: string, method: string) => Operation = spec => (path, method) =>
   spec.paths[path][method.toLowerCase()];
 

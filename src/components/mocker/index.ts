@@ -2,7 +2,7 @@ import faker from "faker";
 import random from "random";
 import { objectPath, randomElement } from "../utils";
 import { getResponseModel, processor } from "../parser";
-import type { Schema } from "openapi3-flowtype-definition";
+import { Schema } from "swagger-schema-official";
 
 type Config = {
   imageProvider: string
@@ -10,15 +10,15 @@ type Config = {
 
 const getFakerMethod = (path: string) => objectPath(faker, path);
 
-const createEnum = (enumElements: Array<string | number | boolean>) =>
+const createEnum = (enumElements: Array<string | number | boolean | {}>) =>
   randomElement(enumElements);
 const createDate = () =>
   faker.date.between(new Date("2015-01-01"), new Date("2021-01-01"));
 const createBoolean = () => random.boolean();
 const createImageLink = (
   provider: string,
-  width?: number = 200,
-  height?: number = 300
+  width: number = 200,
+  height: number = 300
 ) =>
   provider
     .replace("<width>", String(width))
@@ -47,8 +47,8 @@ const extractImageSize = (format: string): number[] =>
     .map(Number);
 
 const createFakeData = ({ imageProvider }: Config) => ({
-  type,
-  format,
+  type = 'string',
+  format = 'random.words',
   minimum = 0,
   maximum = 99999999,
   minLength = 0,
@@ -58,6 +58,7 @@ const createFakeData = ({ imageProvider }: Config) => ({
   if (rest.enum) {
     return createEnum(rest.enum);
   }
+
   if ("nullable" in rest && random.boolean()) {
     return null;
   }
@@ -65,6 +66,7 @@ const createFakeData = ({ imageProvider }: Config) => ({
   if (format === "date") {
     return createDate();
   }
+
   if (/^image\[\d+x\d+\]/.test(format)) {
     const [width, height] = extractImageSize(format);
     return createImageLink(imageProvider, width, height);

@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/bin.js"],"names":[],"mappings":"AAAA;;;AACA;;AACA;;AAEA,oBAAQ,2BAAR","sourcesContent":["#!/usr/bin/env node\nimport { configure } from \"./components/configure\";\nimport { Smogger } from \"./index\";\n\nSmogger(configure());\n"],"file":"bin.js"}
