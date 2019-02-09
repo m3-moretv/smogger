@@ -1,4 +1,4 @@
-import random from 'random';
+import random from "random";
 
 export const entries: (obj: {}) => Array<[string, any]> = Object.entries.bind(
   Object
@@ -16,27 +16,24 @@ export const spreadToArgs: (
 
 export const normalizeUrlParams = (
   subst: RegExp,
-  brackets?: string = ':$1'
+  brackets?: string = ":$1"
 ) => (path: string) => path.replace(subst, brackets);
 
 export const formatSwaggerPath: (path: string) => string = normalizeUrlParams(
   /:(\w+)/g,
-  '{$1}'
+  "{$1}"
 );
 
 export const formatRouterPath: (path: string) => string = normalizeUrlParams(
   /{(\w+)}/g,
-  ':$1'
+  ":$1"
 );
 
 export const objectPath: (object: {}, path: string) => any = (object, path) =>
-  path.split('.').reduce((acc, part) => acc[part], object);
+  path.split(".").reduce((acc, part) => acc[part], object);
 
 export const randomElement: (arr: Array<any>) => any = arr =>
   arr[random.int(0, arr.length - 1)];
-
-export const refToObjectPath: (ref: string) => string = ref =>
-  ref.slice(2).replace('/', '.');
 
 export const compose = (...fns: any) =>
   fns.reduce((f, g) => (...xs) => {

@@ -1,29 +1,33 @@
-#!/usr/bin/env node
 import "source-map-support/register";
 
-import { configure } from "./components/configure";
 import { createHTTPServer } from "./components/router";
-import { mockData } from "./components/mocker";
+import { createMockGenerator } from "./components/mocker";
 import SwaggerParser from "swagger-parser";
-import type { OpenAPI } from "openapi3-flowtype-definition";
 import { getMethodModel } from "./components/parser";
 import { compose } from "./components/utils";
 
-const config = configure();
-const SPEC_PATH = config.spec;
-const PORT = Number(config.port);
-const cfg = {
-  imageProvider: config.imageProvider
-};
-const mocker = mockData(cfg);
+import type Application from "koa";
+import type { OpenAPI } from "openapi3-flowtype-definition";
 
-SwaggerParser.dereference(SPEC_PATH).then((spec: OpenAPI) => {
+type Config = {
+  port: string,
+  spec: string,
+  imageProvider: string
+};
+
+type SmoggerFunction = (config: Config) => Promise<Application>;
+
+export const Smogger: SmoggerFunction = async config => {
+  const { spec: pathToSpec, port, imageProvider } = config;
+  const spec = await SwaggerParser.dereference(pathToSpec);
+  const mocker = createMockGenerator({ imageProvider });
   const getMethod = getMethodModel(spec);
-  const router = createHTTPServer({ port: PORT }, [
+  const router = createHTTPServer({ port: Number(port) }, [
     compose(
       mocker,
       getMethod
     )
   ]);
-  router(spec.paths);
-});
+
+  return router(spec.paths);
+};
