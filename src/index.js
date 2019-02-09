@@ -21,11 +21,11 @@ export const Smogger: SmoggerFunction = async config => {
   const { spec: pathToSpec, port, imageProvider } = config;
   const spec = await SwaggerParser.dereference(pathToSpec);
   const mocker = createMockGenerator({ imageProvider });
-  const getMethod = getMethodModel(spec);
+  const getModelForMethod = getMethodModel(spec);
   const router = createHTTPServer({ port: Number(port) }, [
     compose(
       mocker,
-      getMethod
+      getModelForMethod
     )
   ]);
 
