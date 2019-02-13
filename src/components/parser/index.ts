@@ -1,29 +1,44 @@
 import { entries } from '../utils';
 import { allOf, anyOf, oneOf } from './combiners';
-import { Schema, Operation, Spec } from "swagger-schema-official";
-export type MutatorItems = (schema: Schema) => Array<any>;
+import { OpenAPIV3, IJsonSchema } from "openapi-types";
+
+export type MutatorItems = (schema: IJsonSchema) => Array<any>;
 export type Mutators = {
   items?: MutatorItems
 };
 
+type AllowHTTPMethod = 'get' | 'put' | 'post' | 'delete' | 'options' | 'patch' | 'head' | 'trace';
+type Document = OpenAPIV3.Document;
+type Operation = OpenAPIV3.OperationObject;
+
 export const getMethodModel: (
-  spec: Spec
-) => (path: string, method: string) => Operation = spec => (path, method) =>
-  spec.paths[path][method.toLowerCase()];
+  spec: Document
+) => (path: string, method: AllowHTTPMethod) => Operation | undefined = spec => (path, method) => {
+  try {
+    return spec.paths[path][method]
+  } catch (e) {
+    throw new Error(`Method ${method} not found in ${path}`);
+  }
+};
 
 export const getResponseModel: (
   method: Operation,
   status?: number,
   contentType?: string
-) => Schema = (method, status = 200, contentType = 'application/json') =>
-  method.responses[status].content[contentType].schema;
+) => Schema = (method, status = 200, contentType = 'application/json') => {
+  try {
+    return method.responses[status].content[contentType].schema;
+  } catch (e) {
+    throw new Error(`Response for status ${status} not found in ${path}`);
+  }
+};
 
 export const processor: (
-  cb: (data: Schema) => any,
+  cb: (data: OpenAPIV3.SchemaObject) => any,
   mutators: Mutators,
-  schema: Schema
+  schema: OpenAPIV3.ArraySchemaObject |
 ) => any = (cb, mutators, schema) => {
-  const next = processor.bind(this, cb, mutators);
+  const next = processor.bind(null, cb, mutators);
 
   if (schema.properties) {
     return entries(schema.properties).reduce((result, [key, property]) => {
@@ -41,7 +56,7 @@ export const processor: (
 
   if ('oneOf' in schema || 'anyOf' in schema || 'allOf' in schema) {
     let combiner = () => schema;
-    if (schema.oneOf) {
+    if ('oneOf' in schema) {
       combiner = oneOf(schema.oneOf);
     }
     if (schema.anyOf) {

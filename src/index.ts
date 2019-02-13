@@ -6,7 +6,7 @@ import * as Application from "koa";
 
 import { createMockGenerator } from "./components/mocker";
 // import { createHTTPServer } from "./components/router";
-// import { getMethodModel } from "./components/parser";
+import { getMethodModel } from "./components/parser";
 // import { compose } from "./components/utils";
 
 type Config = {
@@ -21,7 +21,7 @@ export const Smogger: SmoggerFunction = async config => {
   const { spec: pathToSpec, port, imageProvider } = config;
   const spec: Spec = await SwaggerParser.dereference(pathToSpec);
   const mocker = createMockGenerator({ imageProvider });
-  // const getModelForMethod = getMethodModel(spec);
+  const getModelForMethod = getMethodModel(spec);
   // const router = createHTTPServer({ port: Number(port) }, [
   //   compose(
   //     mocker,

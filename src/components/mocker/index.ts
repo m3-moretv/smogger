@@ -2,7 +2,7 @@ import faker from "faker";
 import random from "random";
 import { objectPath, randomElement } from "../utils";
 import { getResponseModel, processor } from "../parser";
-import { Schema } from "swagger-schema-official";
+import { Operation, Schema } from "swagger-schema-official";
 
 type Config = {
   imageProvider: string
@@ -92,7 +92,7 @@ const generateArrayItems = ({ minItems = 0, maxItems = 15, items }: Schema) => {
   return new Array(arrayLength).fill(items);
 };
 
-export const createMockGenerator: (cfg: Config) => (model: Schema) => any = ({
+export const createMockGenerator: (cfg: Config) => (model: Operation) => any = ({
   imageProvider
 }) => model => {
   return processor(

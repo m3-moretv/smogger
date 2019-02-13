@@ -23,5 +23,5 @@ export const configure = (): Config => {
     )
     .parse(process.argv);
 
-  return config.opts();
+  return config.opts() as Config;
 };
