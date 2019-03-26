@@ -1,8 +1,7 @@
 import faker from "faker";
-import random from "random";
 import { objectPath, randomElement } from "../utils";
 import { getResponseModel, processor } from "../parser";
-import type { Schema } from "openapi3-flowtype-definition";
+import { Operation, Schema } from "swagger-schema-official";
 
 type Config = {
   imageProvider: string
@@ -10,15 +9,15 @@ type Config = {
 
 const getFakerMethod = (path: string) => objectPath(faker, path);
 
-const createEnum = (enumElements: Array<string | number | boolean>) =>
+const createEnum = (enumElements: Array<string | number | boolean | {}>) =>
   randomElement(enumElements);
 const createDate = () =>
   faker.date.between(new Date("2015-01-01"), new Date("2021-01-01"));
-const createBoolean = () => random.boolean();
+const createBoolean = () => faker.random.boolean();
 const createImageLink = (
   provider: string,
-  width?: number = 200,
-  height?: number = 300
+  width: number = 200,
+  height: number = 300
 ) =>
   provider
     .replace("<width>", String(width))
@@ -31,7 +30,7 @@ const createString = (format: string = "random.words") => (
   min: number,
   max: number
 ) => {
-  const wordsCount: number = random.int(min, max);
+  const wordsCount: number = faker.random.number({min, max});
   const fakerMethod = getFakerMethod(format);
   const words = fakerMethod(wordsCount);
   return words.slice(0, max);
@@ -47,8 +46,8 @@ const extractImageSize = (format: string): number[] =>
     .map(Number);
 
 const createFakeData = ({ imageProvider }: Config) => ({
-  type,
-  format,
+  type = 'string',
+  format = 'random.words',
   minimum = 0,
   maximum = 99999999,
   minLength = 0,
@@ -58,13 +57,15 @@ const createFakeData = ({ imageProvider }: Config) => ({
   if (rest.enum) {
     return createEnum(rest.enum);
   }
-  if ("nullable" in rest && random.boolean()) {
+
+  if ("nullable" in rest && faker.random.boolean()) {
     return null;
   }
 
   if (format === "date") {
     return createDate();
   }
+
   if (/^image\[\d+x\d+\]/.test(format)) {
     const [width, height] = extractImageSize(format);
     return createImageLink(imageProvider, width, height);
@@ -86,16 +87,18 @@ const createFakeData = ({ imageProvider }: Config) => ({
 };
 
 const generateArrayItems = ({ minItems = 0, maxItems = 15, items }: Schema) => {
-  const arrayLength = random.int(minItems, maxItems);
+  const arrayLength = faker.random.number({min: minItems, max: maxItems});
   return new Array(arrayLength).fill(items);
 };
 
-export const createMockGenerator: (cfg: Config) => (model: Schema) => any = ({
+export const createMockGenerator = ({
   imageProvider
-}) => model => {
+}: Config) => (model: Operation) => {
   return processor(
+      // @ts-ignore
     createFakeData({ imageProvider }),
     { items: generateArrayItems },
+      // @ts-ignore
     getResponseModel(model)
   );
 };

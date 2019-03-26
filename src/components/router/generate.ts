@@ -6,9 +6,11 @@ import {
   spreadToArgs,
   formatRouterPath
 } from '../utils';
-import type { PathItem, Paths } from 'openapi3-flowtype-definition';
+import {Context} from "koa";
+import {NextFunction} from "connect";
+import {OpenAPIV3} from "openapi-types";
 
-const log = ([path, methods]) => {
+const log = ([path, methods]: [string, string]) => {
   console.log(`Create path ${path}`);
   console.log(`With methods`);
   Object.keys(methods).forEach(method => {
@@ -18,8 +20,8 @@ const log = ([path, methods]) => {
   return [path, methods];
 };
 
-const setRouteName = (operationId: string): ?string => operationId || null;
-const defaultResponse = (ctx, next) => {
+const setRouteName = (operationId: string) => operationId || null;
+const defaultResponse = (ctx: Context, next: NextFunction) => {
   ctx.body = `params: ${JSON.stringify(ctx.params, null, 2)}`;
   next();
 };
@@ -44,19 +46,20 @@ const getRouterMethod = (router: Router) => (type: string) => {
 const createMethod = (
   router: Router // save router
 ) => (
-  path // save path
+  path: string // save path
 ) => (
   type: string,
-  { operationId } // bind method to router with saved path
+  { operationId }: {operationId: string} // bind method to router with saved path
 ) =>
   getRouterMethod(router)(type).bind(
     router,
+    // @ts-ignore
     setRouteName(operationId),
     path,
     defaultResponse
   );
 
-export const createRouter = (paths: Paths) => {
+export const createRouter = (paths: OpenAPIV3.PathObject) => {
   const router = new Router();
   const createMethodWithRouter = createMethod(router);
 
@@ -66,6 +69,7 @@ export const createRouter = (paths: Paths) => {
     .map(([path, methods]) => [createMethodWithRouter(path), entries(methods)]) // Создаем функцию для привязки метода к пути и получаем [methodName, methodParams]
     .reduce(
       normalizer(
+          // @ts-ignore
         ([bindMethodToRouter, methods]) =>
           methods.map(spreadToArgs(bindMethodToRouter)) // bindMethodToRouter <- methodProps, возвращаем функцию привязки метода со всеми пропсами
       ),

@@ -1,1 +1,1 @@
-{"version":3,"sources":["../src/bin.js"],"names":[],"mappings":"AAAA;;;AACA;;AACA;;AAEA,oBAAQ,2BAAR","sourcesContent":["#!/usr/bin/env node\nimport { configure } from \"./components/configure\";\nimport { Smogger } from \"./index\";\n\nSmogger(configure());\n"],"file":"bin.js"}
+{"version":3,"file":"bin.js","sourceRoot":"","sources":["../src/bin.ts"],"names":[],"mappings":";;;AACA,oDAAmD;AACnD,sBAA4B;AAE5B,UAAO,CAAC,qBAAS,EAAE,CAAC,CAAC,IAAI,CAAC;IACxB,OAAO,CAAC,GAAG,CAAC,iBAAiB,CAAC,CAAC;AACjC,CAAC,CAAC,CAAC"}

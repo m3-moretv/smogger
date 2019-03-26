@@ -1,13 +1,12 @@
 import "source-map-support/register";
 
-import { createHTTPServer } from "./components/router";
-import { createMockGenerator } from "./components/mocker";
 import SwaggerParser from "swagger-parser";
+import * as Application from "koa";
+
+import { createMockGenerator } from "./components/mocker";
+import { createHTTPServer } from "./components/router";
 import { getMethodModel } from "./components/parser";
 import { compose } from "./components/utils";
-
-import type Application from "koa";
-import type { OpenAPI } from "openapi3-flowtype-definition";
 
 type Config = {
   port: string,
@@ -23,10 +22,7 @@ export const Smogger: SmoggerFunction = async config => {
   const mocker = createMockGenerator({ imageProvider });
   const getModelForMethod = getMethodModel(spec);
   const router = createHTTPServer({ port: Number(port) }, [
-    compose(
-      mocker,
-      getModelForMethod
-    )
+    compose(mocker, getModelForMethod)
   ]);
 
   return router(spec.paths);

@@ -1,5 +1,4 @@
-#!/usr/bin/env node
-const responseCache: { [string]: any } = new Map();
+const responseCache: { [key: string]: any } = new Map();
 
 const cacheKey = (path: string, method: string): string => `${method}_${path}`;
 

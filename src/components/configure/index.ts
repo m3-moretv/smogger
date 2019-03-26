@@ -1,5 +1,4 @@
 import config from 'commander';
-import pkg from '../../../package.json';
 
 type Config = {
   spec: string,
@@ -9,7 +8,6 @@ type Config = {
 
 export const configure = (): Config => {
   config
-    .version(pkg.version)
     .option(
       '-s --spec <spec>',
       'URL or path to spec file (yml, or json is same)',
@@ -23,5 +21,5 @@ export const configure = (): Config => {
     )
     .parse(process.argv);
 
-  return config.opts();
+  return config.opts() as Config;
 };
