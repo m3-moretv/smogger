@@ -1,5 +1,4 @@
 import faker from "faker";
-import random from "random";
 import { objectPath, randomElement } from "../utils";
 import { getResponseModel, processor } from "../parser";
 import { Operation, Schema } from "swagger-schema-official";
@@ -14,7 +13,7 @@ const createEnum = (enumElements: Array<string | number | boolean | {}>) =>
   randomElement(enumElements);
 const createDate = () =>
   faker.date.between(new Date("2015-01-01"), new Date("2021-01-01"));
-const createBoolean = () => random.boolean();
+const createBoolean = () => faker.random.boolean();
 const createImageLink = (
   provider: string,
   width: number = 200,
@@ -31,7 +30,7 @@ const createString = (format: string = "random.words") => (
   min: number,
   max: number
 ) => {
-  const wordsCount: number = random.int(min, max);
+  const wordsCount: number = faker.random.number({min, max});
   const fakerMethod = getFakerMethod(format);
   const words = fakerMethod(wordsCount);
   return words.slice(0, max);
@@ -59,7 +58,7 @@ const createFakeData = ({ imageProvider }: Config) => ({
     return createEnum(rest.enum);
   }
 
-  if ("nullable" in rest && random.boolean()) {
+  if ("nullable" in rest && faker.random.boolean()) {
     return null;
   }
 
@@ -88,16 +87,18 @@ const createFakeData = ({ imageProvider }: Config) => ({
 };
 
 const generateArrayItems = ({ minItems = 0, maxItems = 15, items }: Schema) => {
-  const arrayLength = random.int(minItems, maxItems);
+  const arrayLength = faker.random.number({min: minItems, max: maxItems});
   return new Array(arrayLength).fill(items);
 };
 
-export const createMockGenerator: (cfg: Config) => (model: Operation) => any = ({
+export const createMockGenerator = ({
   imageProvider
-}) => model => {
+}: Config) => (model: Operation) => {
   return processor(
+      // @ts-ignore
     createFakeData({ imageProvider }),
     { items: generateArrayItems },
+      // @ts-ignore
     getResponseModel(model)
   );
 };

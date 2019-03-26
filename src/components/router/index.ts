@@ -1,31 +1,19 @@
-import Koa from "koa";
-import type Application, { Context } from "koa";
-import type { PathItem } from "openapi3-flowtype-definition";
+import Koa, {Context} from "koa";
 
 import { createRouter } from "./generate";
-import { compose, formatSwaggerPath } from "../utils";
+import { formatSwaggerPath } from "../utils";
 
 import { getFromCache, setToCache } from "../cache";
+import Application = require("koa");
+import {OpenAPIV3} from "openapi-types";
 
 export type Middleware = (path: string, method: string, data?: any) => any;
 
-const dataToResponse: (data: string, ctx: Context) => string = (data, ctx) =>
-  (ctx.body = data);
+const dataToResponse: (data: string, ctx: any) => string = (data, ctx) => (ctx.body = data);
 
-type CreateProccesingMiddleware = (
-  router: Application,
-  processors: Array<Middleware>
-) => Application;
 
-type CreateCacheMiddleware = (router: Application) => Application;
-
-const exposeRequestProps: (
-  ctx: Context
-) => { path: string, method: string } = ctx => {
-  const {
-    req: { method },
-    _matchedRoute
-  } = ctx;
+const exposeRequestProps = (ctx: Context) => {
+  const { req: { method }, _matchedRoute } = ctx;
   const path = formatSwaggerPath(_matchedRoute);
 
   return {
@@ -34,7 +22,7 @@ const exposeRequestProps: (
   };
 };
 
-export const createRouteMiddleware = (app: Application, paths: PathItem) => {
+export const createRouteMiddleware = (app: Application, paths: any) => {
   const router = createRouter(paths);
 
   app.use(router.routes()).use(router.allowedMethods());
@@ -57,7 +45,7 @@ export const createRequestStateMiddleware = (app: Application) =>
     next();
   });
 
-export const createCacheMiddleware: CreateCacheMiddleware = (
+export const createCacheMiddleware = (
   app: Application
 ) =>
   app.use((ctx, next) => {
@@ -76,7 +64,7 @@ export const createCacheMiddleware: CreateCacheMiddleware = (
     dataToResponse(cachedData, ctx);
   });
 
-export const createProcessingMiddleware: CreateProccesingMiddleware = (
+export const createProcessingMiddleware = (
   app: Application,
   middlewares: Middleware[]
 ) =>
@@ -87,8 +75,10 @@ export const createProcessingMiddleware: CreateProccesingMiddleware = (
       return next();
     }
 
-    const processor = compose(...middlewares);
-    const data = processor(path, method);
+    const data = middlewares.reduce((result, mw) => {
+        return mw(path, method.toLowerCase(), result)
+    }, {});
+    //const data = processor(path, method.toLowerCase());
 
     const dataAsString = JSON.stringify(data);
 
@@ -100,7 +90,7 @@ export const createProcessingMiddleware: CreateProccesingMiddleware = (
 export const createHTTPServer = (
   { port }: { port: number },
   middlewares: Middleware[]
-) => (paths: PathItem): Application => {
+) => (paths: {[pattern: string]: OpenAPIV3.PathItemObject}): Application => {
   const app = new Koa();
 
   createRouteMiddleware(app, paths);

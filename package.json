@@ -5,11 +5,9 @@
   "main": "./lib/index.js",
   "bin": "./lib/bin.js",
   "scripts": {
-    "build": "tsc src/ -d lib/ --source-maps",
-    "build:prod": "NODE_ENV=production npm run build",
-    "build:dev": "NODE_ENV=development npm run build -- --watch",
-    "test": "NODE_ENV=test jest",
-    "flow:deps": "flow-typed install"
+    "build:prod": "NODE_ENV=production npx tsc --build",
+    "build:dev": "NODE_ENV=development npx tsc --build -w",
+    "test": "NODE_ENV=test jest"
   },
   "husky": {
     "hooks": {
@@ -18,7 +16,6 @@
   },
   "lint-staged": {
     "*.js": [
-      "flow focus-check",
       "prettier --write",
       "git add"
     ]
@@ -37,6 +34,8 @@
     "@loopback/openapi-v3-types": "^1.0.6",
     "@types/faker": "^4.1.5",
     "@types/koa": "^2.0.48",
+    "@types/koa-router": "^7.0.40",
+    "@types/ramda": "^0.26.5",
     "@types/swagger-parser": "^4.0.2",
     "commander": "^2.19.0",
     "deepmerge": "^2.2.1",
@@ -47,15 +46,18 @@
     "lint-staged": "^8.1.0",
     "openapi-types": "^1.3.4",
     "prettier": "^1.15.3",
+    "ramda": "^0.26.1",
     "random": "^2.0.12",
     "source-map-support": "^0.5.10",
     "swagger-parser": "^6.0.3",
-    "tsc": "^1.20150623.0"
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.3.4000"
   },
   "devDependencies": {
     "@types/jest": "^23.3.9",
     "babel-core": "^7.0.0-bridge",
     "babel-jest": "^23.6.0",
+    "flow-remove-types": "^1.2.3",
     "jest": "^23.6.0"
   }
 }

@@ -14,34 +14,27 @@ type Operation = OpenAPIV3.OperationObject;
 export const getMethodModel: (
   spec: Document
 ) => (path: string, method: AllowHTTPMethod) => Operation | undefined = spec => (path, method) => {
-  try {
-    return spec.paths[path][method]
-  } catch (e) {
-    throw new Error(`Method ${method} not found in ${path}`);
-  }
+  if (!spec.paths[path]) {throw new Error(`Path ${path} not found in spec`) }
+  if (!spec.paths[path][method]) {throw new Error(`Path ${path} not found in spec`) }
+  return spec.paths[path][method]
 };
 
-export const getResponseModel: (
-  method: Operation,
-  status?: number,
-  contentType?: string
-) => Schema = (method, status = 200, contentType = 'application/json') => {
+export const getResponseModel = (method: any, status = 200, contentType = 'application/json') => {
   try {
     return method.responses[status].content[contentType].schema;
   } catch (e) {
-    throw new Error(`Response for status ${status} not found in ${path}`);
+    throw new Error(`Response for status ${status} not found`);
   }
 };
 
-export const processor: (
-  cb: (data: OpenAPIV3.SchemaObject) => any,
-  mutators: Mutators,
-  schema: OpenAPIV3.ArraySchemaObject |
-) => any = (cb, mutators, schema) => {
+// @ts-ignore
+export const processor = (cb, mutators, schema) => {
+  // @ts-ignore
   const next = processor.bind(null, cb, mutators);
 
   if (schema.properties) {
     return entries(schema.properties).reduce((result, [key, property]) => {
+      // @ts-ignore
       result[key] = next(property);
       return result;
     }, {});
@@ -49,6 +42,7 @@ export const processor: (
 
   if (schema.items) {
     if (mutators.items) {
+      // @ts-ignore
       return mutators.items(schema).map(item => next(item));
     }
     return next(schema.items);
