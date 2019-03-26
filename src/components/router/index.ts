@@ -1,12 +1,12 @@
-import Koa from "koa";
-import type Application, { Context } from "koa";
+import Koa, {Context} from "koa";
 import koaCompose from "koa-compose";
-import type { PathItem } from "openapi3-flowtype-definition";
 
 import { createRouter } from "./generate";
 import { compose, formatSwaggerPath } from "../utils";
 
 import { getFromCache, setToCache } from "../cache";
+import Application = require("koa");
+import {OpenAPIV3} from "openapi-types";
 
 type Middleware = (ctx: Context, next: any) => void;
 
@@ -23,9 +23,7 @@ type CreateProccesingMiddleware = (
   processors: Array<ProcessingMiddleware>
 ) => Middleware;
 
-const exposeRequestProps: (
-  ctx: Context
-) => { path: string, method: string } = ctx => {
+const exposeRequestProps = (ctx: Context) => {
   const {
     req: { method },
     _matchedRoute
@@ -34,11 +32,11 @@ const exposeRequestProps: (
 
   return {
     path,
-    method
+    method: method ? method.toLowerCase() : undefined
   };
 };
 
-const createRouteMiddlewares = (paths: PathItem) => {
+const createRouteMiddlewares = (paths: OpenAPIV3.PathObject) => {
   const router = createRouter(paths);
 
   return [router.routes(), router.allowedMethods()];
@@ -97,7 +95,7 @@ export const createProcessingMiddleware: CreateProccesingMiddleware = (
 export const createHTTPServer = (
   { port }: { port: number },
   middlewares: ProcessingMiddleware[]
-) => (paths: PathItem): Application => {
+) => (paths: OpenAPIV3.PathObject): Application => {
   const app = new Koa();
 
   const serverMiddlewares = koaCompose([

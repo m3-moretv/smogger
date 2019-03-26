@@ -15,7 +15,7 @@ export const getMethodModel: (
   spec: Document
 ) => (path: string, method: AllowHTTPMethod) => Operation | undefined = spec => (path, method) => {
   if (!spec.paths[path]) {throw new Error(`Path ${path} not found in spec`) }
-  if (!spec.paths[path][method]) {throw new Error(`Path ${path} not found in spec`) }
+  if (!spec.paths[path][method]) {throw new Error(`Method ${method} not found in ${path}`) }
   return spec.paths[path][method]
 };
 
